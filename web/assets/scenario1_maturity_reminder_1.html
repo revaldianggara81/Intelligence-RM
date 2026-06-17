@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario 1 — Maturity Reminder & Action Plan | Oracle AI · Danamon POC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c1a;--surface:#0b1529;--card:#0f1e35;--card2:#132442;
+  --border:#1a2e4a;--border2:#1f3759;
+  --red:#c74634;--red2:#e04828;
+  --cyan:#00ccff;--gold:#ffb830;--ok:#00d47e;--warn:#ffa726;--danger:#ff4f4f;
+  --txt:#dce8f5;--txt2:#6e8aaa;--txt3:#3d5570;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--disp:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:100vh;}
+
+/* ── Header ── */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:12px;}
+.opill{background:var(--red);color:#fff;font-family:var(--disp);font-weight:700;font-size:13px;padding:4px 10px;border-radius:5px;}
+.htitle{font-size:12.5px;color:var(--txt2);}
+.chip{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.c1{background:rgba(255,167,38,.1);color:var(--warn);border:1px solid rgba(255,167,38,.3);}
+.c2{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.25);}
+.c3{background:rgba(255,184,48,.1);color:var(--gold);border:1px solid rgba(255,184,48,.25);}
+
+/* ── Scenario badge ── */
+.sc-badge{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border2);border-radius:12px;padding:1.5rem 2rem;margin:1.5rem 2rem .5rem;display:flex;align-items:center;gap:1.5rem;}
+.sc-num{font-family:var(--disp);font-size:3rem;font-weight:800;color:var(--border2);line-height:1;}
+.sc-info{}
+.sc-tag{font-family:var(--mono);font-size:9.5px;color:var(--warn);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.sc-title{font-family:var(--disp);font-size:1.5rem;font-weight:700;line-height:1.15;}
+.sc-sub{font-size:12.5px;color:var(--txt2);margin-top:4px;line-height:1.5;}
+.sc-chips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+/* ── Layout ── */
+.wrap{max-width:1200px;margin:0 auto;padding:0 2rem 3rem;}
+.grid{display:grid;grid-template-columns:280px 1fr;gap:14px;margin-top:1rem;}
+
+/* ── Customer Card ── */
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:72px;}
+.cc-head{padding:1.1rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border);}
+.ava{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#7a1c0e,var(--red2));display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:17px;color:#fff;margin-bottom:10px;}
+.cname{font-size:15px;font-weight:600;}
+.cid{font-size:10.5px;color:var(--txt3);font-family:var(--mono);margin-top:2px;}
+.tier{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;margin-top:7px;background:rgba(255,184,48,.15);color:var(--gold);border:1px solid rgba(255,184,48,.3);}
+.alert-flag{margin:.7rem 1.1rem;padding:9px 11px;border-radius:8px;font-size:11.5px;line-height:1.55;display:flex;align-items:flex-start;gap:6px;background:rgba(255,167,38,.08);border:1px solid rgba(255,167,38,.25);color:#ffbe5e;}
+.cc-body{padding:.7rem 1.1rem;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.032);font-size:12px;}
+.dr:last-child{border-bottom:none;}
+.dk{color:var(--txt2);}
+.dv{font-family:var(--mono);font-size:11px;font-weight:500;}
+.dv.g{color:var(--ok);}.dv.w{color:var(--warn);}.dv.d{color:var(--danger);}
+
+/* ── Data sources ── */
+.ds-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-top:12px;}
+.ds-lbl{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:.6rem;}
+.ds-item{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--txt2);padding:3px 0;line-height:1.5;}
+.ds-item .ck{color:var(--ok);flex-shrink:0;font-size:11px;}
+
+/* ── PAF Engine ── */
+.paf{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.paf-head{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.paf-lbl{font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);}
+.paf-name{font-size:14px;font-weight:600;margin-top:1px;}
+.run-btn{padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.15s;display:flex;align-items:center;gap:7px;}
+.run-btn:hover{background:var(--red2);}.run-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── Pipeline ── */
+.pipeline{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;overflow-x:auto;}
+.pstage{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:76px;}
+.picon{width:42px;height:42px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .3s;}
+.picon.act{border-color:var(--cyan);background:rgba(0,204,255,.08);box-shadow:0 0 12px rgba(0,204,255,.15);}
+.picon.done{border-color:var(--ok);background:rgba(0,212,126,.07);}
+.plabel{font-size:9px;color:var(--txt2);text-align:center;font-family:var(--mono);line-height:1.3;}
+.parr{flex-shrink:0;width:26px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;transition:.25s;}
+.parr.act{color:var(--cyan);}
+
+/* ── Agent log ── */
+.alog{display:none;flex-direction:column;gap:4px;padding:.7rem 1.2rem;border-bottom:1px solid var(--border);}
+.alog.vis{display:flex;}
+.aline{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);font-family:var(--mono);opacity:0;transition:.2s;}
+.aline.vis{opacity:1;}
+.adot{width:6px;height:6px;border-radius:50%;background:var(--txt3);flex-shrink:0;}
+.adot.run{background:var(--cyan);animation:pulse 1s infinite;}
+.adot.ok{background:var(--ok);}
+
+/* ── Output ── */
+.out-wrap{padding:1.2rem;min-height:320px;max-height:560px;overflow-y:auto;}
+.out-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;}
+.out-ph .ico{font-size:32px;}.out-ph .p1{font-size:13px;color:var(--txt2);}.out-ph .p2{font-size:10.5px;font-family:var(--mono);color:var(--txt3);}
+.out-body{display:none;}.out-body.vis{display:block;}
+
+/* Output blocks */
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);font-family:var(--mono);margin:1rem 0 .4rem;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:rgba(0,204,255,.1);}
+.sec:first-child{margin-top:0;}
+.item{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;margin-bottom:5px;background:rgba(255,255,255,.022);border-radius:8px;border-left:2px solid var(--cyan);font-size:12.5px;line-height:1.65;}
+.item-ic{width:17px;height:17px;border-radius:50%;background:rgba(0,204,255,.12);border:1px solid rgba(0,204,255,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:9px;color:var(--cyan);}
+.item.gold{border-left-color:var(--gold);}.item.gold .item-ic{background:rgba(255,184,48,.12);border-color:rgba(255,184,48,.28);color:var(--gold);}
+.item.green{border-left-color:var(--ok);}.item.green .item-ic{background:rgba(0,212,126,.12);border-color:rgba(0,212,126,.28);color:var(--ok);}
+.item.red{border-left-color:var(--danger);}.item.red .item-ic{background:rgba(255,79,79,.12);border-color:rgba(255,79,79,.28);color:var(--danger);}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--cyan);margin-left:1px;vertical-align:middle;animation:blink .7s infinite;}
+
+/* Option comparison cards */
+.opt-card{border-radius:10px;margin-bottom:8px;overflow:hidden;border:1px solid var(--border);}
+.opt-card.gold{border-color:rgba(255,184,48,.35);}
+.opt-card.blue{border-color:rgba(0,204,255,.25);}
+.opt-card.green{border-color:rgba(0,212,126,.3);}
+.opt-head{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;gap:10px;}
+.opt-card.gold .opt-head{background:rgba(255,184,48,.08);}
+.opt-card.blue .opt-head{background:rgba(0,204,255,.06);}
+.opt-card.green .opt-head{background:rgba(0,212,126,.07);}
+.opt-label{font-family:var(--disp);font-size:14px;font-weight:700;}
+.opt-card.gold .opt-label{color:var(--gold);}
+.opt-card.blue .opt-label{color:var(--cyan);}
+.opt-card.green .opt-label{color:var(--ok);}
+.opt-tag{font-size:9.5px;font-family:var(--mono);padding:2px 8px;border-radius:4px;}
+.opt-card.gold .opt-tag{background:rgba(255,184,48,.12);color:var(--gold);border:1px solid rgba(255,184,48,.25);}
+.opt-card.blue .opt-tag{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.22);}
+.opt-card.green .opt-tag{background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.22);}
+.opt-rows{padding:6px 13px 4px;border-bottom:1px solid rgba(255,255,255,.04);}
+.opt-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03);}
+.opt-row:last-child{border-bottom:none;}
+.opt-rk{color:var(--txt2);font-family:var(--mono);font-size:11px;}
+.opt-rv{font-weight:500;font-size:12px;}
+.opt-card.gold .opt-rv{color:var(--gold);}
+.opt-card.blue .opt-rv{color:var(--cyan);}
+.opt-card.green .opt-rv{color:var(--ok);}
+.opt-why{padding:9px 13px;font-size:12px;line-height:1.65;color:var(--txt2);background:rgba(255,255,255,.015);}
+.opt-why strong{color:var(--txt);}
+.opt-urgent{padding:6px 13px;font-size:11.5px;font-family:var(--mono);color:var(--warn);background:rgba(255,167,38,.05);border-top:1px solid rgba(255,167,38,.15);}
+
+/* Footer */
+.footer{text-align:center;font-size:10px;font-family:var(--mono);color:var(--txt3);padding:1.5rem 2rem;border-top:1px solid var(--border);line-height:1.9;}
+
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.15;}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes fu{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fu .28s ease forwards;}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media(max-width:800px){.grid{grid-template-columns:1fr;}.ccard{position:static;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <span class="opill">ORACLE</span>
+    <span class="htitle">AI RM Intelligence Platform &nbsp;·&nbsp; Bank Danamon POC</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <span class="chip c1">Pre-Meeting</span>
+    <span class="chip c2">Oracle DB 26ai</span>
+    <span class="chip c3">PAF</span>
+  </div>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;">
+  <div class="sc-badge">
+    <div class="sc-num">01</div>
+    <div class="sc-info">
+      <div class="sc-tag">Scenario 1 &nbsp;·&nbsp; Pre-Meeting</div>
+      <div class="sc-title">Maturity Reminder &amp; Action Plan</div>
+      <div class="sc-sub">PAF Scheduling Agent detects product maturity, triggers KYC &amp; Promotion agents, and delivers a personalised RM action plan via Oracle Select AI.</div>
+      <div class="sc-chips">
+        <span class="chip c1">Deposit Maturity Alert</span>
+        <span class="chip c3">PAF Scheduling Agent</span>
+        <span class="chip c2">KYC Agent</span>
+        <span style="font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.25);">Select AI Synthesis</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <!-- Left: Customer -->
+    <div>
+      <div class="ccard">
+        <div class="cc-head">
+          <div class="ava">BS</div>
+          <div class="cname">Budi Santoso</div>
+          <div class="cid">CIF: DAN-0041872 &nbsp;·&nbsp; RM: Anisa Ramadhani</div>
+          <div class="tier">★ Nasabah Prioritas</div>
+        </div>
+        <div class="alert-flag">⚠️ <div>Deposito maturing <strong>23 May 2026</strong> (7 days). CC late payment detected Apr 2026.</div></div>
+        <div class="cc-body">
+          <div class="dr"><span class="dk">Age</span><span class="dv">58 years</span></div>
+          <div class="dr" style="flex-direction:column;align-items:flex-start;gap:5px;padding-bottom:9px;">
+            <span class="dk" style="font-size:11px;">Monthly Income &nbsp;<span style="color:var(--ok);font-size:10px;">Rp 45,000,000 total</span></span>
+            <div style="width:100%;display:flex;flex-direction:column;gap:3px;padding-left:8px;border-left:2px solid var(--border2);">
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;">
+                <span style="color:var(--txt2);">🏛 Pension (BPJS)</span><span class="dv g">Rp 28,000,000</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;">
+                <span style="color:var(--txt2);">🏠 Rental Income (2 units)</span><span class="dv g">Rp 17,000,000</span>
+              </div>
+            </div>
+          </div>
+          <div class="dr"><span class="dk">Risk Appetite</span><span class="dv">Conservative–Moderate</span></div>
+          <div class="dr"><span class="dk">Deposito Balance</span><span class="dv g">Rp 750,000,000</span></div>
+          <div class="dr"><span class="dk">Maturity Date</span><span class="dv w">23 May 2026 ⚠</span></div>
+          <div class="dr"><span class="dk">CC Outstanding</span><span class="dv d">Rp 2,500,000</span></div>
+          <div class="dr"><span class="dk">CC Payment</span><span class="dv d">Missed — Apr 2026</span></div>
+          <div class="dr"><span class="dk">Total Savings &amp; Investment</span><span class="dv g">Rp 1,250,000,000</span></div>
+        </div>
+      </div>
+      <div class="ds-box">
+        <div class="ds-lbl">Data Sources · Oracle DB 26ai</div>
+        <div class="ds-item"><span class="ck">✓</span>Core Banking — deposit &amp; transaction records</div>
+        <div class="ds-item"><span class="ck">✓</span>CC payment history (3 months)</div>
+        <div class="ds-item"><span class="ck">✓</span>Past RM meeting notes (vector-embedded)</div>
+        <div class="ds-item"><span class="ck">✓</span>Call center transcripts (semantic match)</div>
+        <div class="ds-item"><span class="ck">✓</span>Product catalog &amp; current promo rates</div>
+      </div>
+    </div>
+
+    <!-- Right: PAF Engine -->
+    <div>
+      <div class="paf">
+        <div class="paf-head">
+          <div>
+            <div class="paf-lbl">Private Agent Factory · Oracle Select AI</div>
+            <div class="paf-name">Maturity Reminder &amp; RM Action Plan Generator</div>
+          </div>
+          <button class="run-btn" id="runBtn" onclick="runDemo()">▶ Run AI Analysis</button>
+        </div>
+
+        <!-- Pipeline -->
+        <div class="pipeline">
+          <div class="pstage"><div class="picon" id="ic1">🗄️</div><div class="plabel">Oracle DB<br>26ai</div></div>
+          <div class="parr" id="ar1">→</div>
+          <div class="pstage"><div class="picon" id="ic2">📅</div><div class="plabel">Scheduling<br>Agent</div></div>
+          <div class="parr" id="ar2">→</div>
+          <div class="pstage"><div class="picon" id="ic3">🔍</div><div class="plabel">KYC<br>Agent</div></div>
+          <div class="parr" id="ar3">→</div>
+          <div class="pstage"><div class="picon" id="ic4">🎯</div><div class="plabel">Promotion<br>Agent</div></div>
+          <div class="parr" id="ar4">→</div>
+          <div class="pstage"><div class="picon" id="ic5">🧠</div><div class="plabel">Select AI<br>Synthesis</div></div>
+          <div class="parr" id="ar5">→</div>
+          <div class="pstage"><div class="picon" id="ic6">📋</div><div class="plabel">RM Action<br>Plan</div></div>
+        </div>
+
+        <!-- Agent log -->
+        <div class="alog" id="alog">
+          <div class="aline" id="al1"><div class="adot run"></div>Checking Bapak Budi's full customer profile and savings history...</div>
+          <div class="aline" id="al2"><div class="adot"></div>Deposit maturity alert confirmed — Rp 750M falls due in 7 days on 23 May 2026...</div>
+          <div class="aline" id="al3"><div class="adot"></div>Reviewing financial health: credit card payment missed last month, overall savings healthy...</div>
+          <div class="aline" id="al4"><div class="adot"></div>Finding best-fit products: ORI-027 at 6.5% and Deposito Special rate at 6.2% identified...</div>
+          <div class="aline" id="al5"><div class="adot"></div>Preparing personalised action plan and talking points for RM Anisa Ramadhani...</div>
+        </div>
+
+        <!-- Output -->
+        <div class="out-wrap" id="outWrap">
+          <div class="out-ph" id="outPh">
+            <div class="ico">📋</div>
+            <div class="p1">Click "Run AI Analysis" to generate the RM action plan</div>
+            <div class="p2">PAF agents · Oracle DB 26ai · Select AI synthesis</div>
+          </div>
+          <div class="out-body" id="outBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Oracle Private Agent Factory (PAF) &nbsp;·&nbsp; Oracle Database 26ai &nbsp;·&nbsp; Scenario 1: Maturity Reminder &amp; Action Plan &nbsp;·&nbsp; Bank Danamon POC · May 2026<br>
+  ★ All customer data is synthetic — created for POC demonstration only. Not actual Danamon customer data.
+</div>
+
+<script>
+const BLOCKS = [
+  {t:'h',v:'SITUATION SUMMARY'},
+  {t:'i',c:'red',i:'!',v:'<strong>Action needed this week:</strong> Bapak Budi Santoso has a Deposito of <strong>Rp 750,000,000 that matures in 7 days</strong> on 23 May 2026. If the RM does not reach out before this date, the funds will sit idle or auto-rollover at a lower standard rate — a missed opportunity to deepen the relationship and grow his returns.'},
+  {t:'i',c:'',i:'→',v:'During a call to our service centre in March 2026, Bapak Budi asked about ORI-027 interest rates — which tells us he is already thinking about where to put his money next. This is the perfect moment to have that conversation.'},
+  {t:'i',c:'red',i:'!',v:'Separately, Bapak Budi\'s credit card payment was missed last month (Rp 2,500,000). This is the first time in 2 years, so it is likely just an oversight. Mention it gently at the end of the meeting — do not lead with it.'},
+
+  {t:'h',v:'ABOUT THIS CUSTOMER'},
+  {t:'i',c:'',i:'→',v:'Bapak Budi is 58 years old with two stable income streams: a <strong>pension of Rp 28,000,000/month</strong> from BPJS, plus <strong>rental income of Rp 17,000,000/month</strong> from two property units — totalling Rp 45,000,000 every month without needing to work. This makes him very financially secure.'},
+  {t:'i',c:'',i:'→',v:'He has a total of <strong>Rp 1.25 billion</strong> in savings and investments with Danamon, placing him firmly in our Nasabah Prioritas group. He is not a risk-taker — he wants his money to be safe and to earn a steady income from it, like interest or coupons.'},
+  {t:'i',c:'green',i:'✓',v:'His past discussions with the RM and his service centre calls confirm he prefers products that pay out regular income, rather than products whose value goes up and down with the market. This guides all three options below.'},
+
+  {t:'h',v:'SUGGESTED TALKING POINTS FOR THE MEETING'},
+  {t:'i',c:'gold',i:'★',v:'"Bapak Budi, deposito Bapak akan jatuh tempo dalam 7 hari. Kami sudah siapkan beberapa pilihan terbaik agar dana ini tetap menghasilkan untuk Bapak — ada yang dijamin pemerintah dan ada yang lebih fleksibel. Boleh saya jelaskan?"'},
+  {t:'i',c:'',i:'→',v:'Remind him that when the deposit matures, the money should not sit idle — even a few weeks without placement costs him potential income. At Rp 750M and 6% interest, every month of delay costs approximately Rp 3,750,000 in missed returns.'},
+  {t:'i',c:'',i:'→',v:'Reference his ORI-027 enquiry from March: <em>"Bapak pernah tanya soal ORI-027 — kebetulan sekarang masih ada dan bunganya 6.5% per tahun, dijamin pemerintah."</em> This shows you were listening and builds trust immediately.'},
+  {t:'i',c:'gold',i:'★',v:'If he asks about the credit card: <em>"Kami lihat tagihan bulan lalu belum terbayar — apakah ada yang bisa kami bantu atur? Kami bisa pasangkan auto-debet agar tidak terlewat lagi."</em> Keep it brief and helpful, not confrontational.'},
+
+  {t:'h',v:'THREE REINVESTMENT OPTIONS — WHAT HAPPENS TO ALL Rp 750M'},
+
+  {t:'o',label:'Option 1',tag:'Recommended · Safe Income',
+   color:'gold',
+   rows:[
+     {k:'Rp 500M →',v:'ORI-027 Government Bond @ 6.5% p.a.'},
+     {k:'Rp 250M →',v:'Deposito Reguler auto-rollover @ 5.5% p.a.'},
+     {k:'Total income/year',v:'Rp 46,250,000'},
+     {k:'Rp 500M yield',v:'Rp 32,500,000 (ORI-027 coupon)'},
+     {k:'Rp 250M yield',v:'Rp 13,750,000 (Deposito interest)'},
+   ],
+   why:'<strong>Why split Rp 500M into ORI-027 and keep Rp 250M in Deposito?</strong> ORI-027 is a government bond — the maximum individual purchase per series is typically Rp 500M, so the remaining Rp 250M stays in a regular Deposito to keep earning. The ORI-027 portion earns a higher rate (6.5%) while the Deposito provides easy access to cash if needed. This is the best combination of high return and security for his profile.',
+   urgent:'ORI-027 subscription window closes 30 May 2026 — act before maturity date.'
+  },
+
+  {t:'o',label:'Option 2',tag:'Simplest — No Change Needed',
+   color:'blue',
+   rows:[
+     {k:'Rp 750M →',v:'Deposito Spesial rollover @ 6.2% p.a.'},
+     {k:'Total income/year',v:'Rp 46,500,000'},
+     {k:'Difference vs Option 1',v:'Rp +250,000 more per year'},
+   ],
+   why:'<strong>Why consider this?</strong> If Bapak Budi does not want any changes or paperwork, rolling the full Rp 750M into the Deposito Spesial rate of 6.2% is the path of least resistance. He earns slightly more than Option 1 in pure rupiah terms (Rp 46.5M vs Rp 46.25M), but his money is locked in one product with no government bond backing. Best for customers who want zero disruption.',
+   urgent:null
+  },
+
+  {t:'o',label:'Option 3',tag:'Best Flexibility — Liquid Reserve',
+   color:'green',
+   rows:[
+     {k:'Rp 500M →',v:'ORI-027 Government Bond @ 6.5% p.a.'},
+     {k:'Rp 250M →',v:'Reksa Dana Pasar Uang (Money Market Fund)'},
+     {k:'Total income/year',v:'≈ Rp 45,750,000'},
+     {k:'Rp 500M yield',v:'Rp 32,500,000 (ORI-027 coupon)'},
+     {k:'Rp 250M yield',v:'≈ Rp 13,250,000 (est. 5.3% money market)'},
+   ],
+   why:'<strong>How is Option 3 different from Option 1?</strong> Both options put Rp 500M into ORI-027. The key difference is what happens to the remaining Rp 250M. In Option 1 it goes into a fixed Deposito (locked for 1–3 months, predictable interest). In Option 3 it goes into a Money Market Fund — which can be withdrawn any business day if Bapak Budi needs cash urgently, for example for medical expenses or a large purchase. Option 3 earns very slightly less than Option 1 but gives full liquidity on the Rp 250M portion.',
+   urgent:null
+  },
+
+  {t:'h',v:'CREDIT CARD — HOW TO RAISE IT'},
+  {t:'i',c:'',i:'→',v:'The missed payment of Rp 2,500,000 is very small compared to his Rp 1.25B in savings — this is almost certainly a forgotten payment, not a sign of financial difficulty. Do not let this overshadow the reinvestment conversation.'},
+  {t:'i',c:'green',i:'✓',v:'Offer to set up automatic payment (auto-debet) from his Danamon savings account to the credit card each month. This takes 5 minutes to arrange and means it can never be missed again. It is a small action that shows you are looking after the whole picture, not just selling a product.'},
+
+  {t:'h',v:'YOUR ACTION PLAN'},
+  {t:'i',c:'red',i:'!',v:'<strong>Today:</strong> Call or send a WhatsApp message to Bapak Budi. Confirm he knows the deposit matures in 7 days and schedule a meeting (phone or branch) within the next 3 days. Do not wait for him to call you.'},
+  {t:'i',c:'gold',i:'★',v:'<strong>Before the meeting:</strong> Print or prepare a simple side-by-side comparison of all 3 options showing the projected annual income in rupiah for each. Showing Rp figures (not just percentages) makes the choice easier and more real for the customer.'},
+  {t:'i',c:'',i:'→',v:'<strong>At the meeting:</strong> Walk through all 3 options. Let Bapak Budi choose — do not push one too hard. Record his preference in the system even if he asks for more time to decide.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>At the meeting:</strong> Offer to set up the CC auto-payment. Takes 5 minutes and leaves a strong positive impression.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>After the meeting:</strong> Update the customer record in the system within 24 hours. Set a follow-up reminder 90 days before the next product maturity date so this situation never happens at the last minute again.'},
+];
+
+let busy=false;
+
+async function runDemo(){
+  if(busy) return; busy=true;
+  const btn=document.getElementById('runBtn');
+  const alog=document.getElementById('alog');
+  const ph=document.getElementById('outPh');
+  const body=document.getElementById('outBody');
+  const wrap=document.getElementById('outWrap');
+
+  btn.disabled=true; btn.textContent='⟳ Analysing…';
+  ph.style.display='none';
+  body.classList.remove('vis'); body.innerHTML='';
+  alog.classList.add('vis');
+
+  const icons=['ic1','ic2','ic3','ic4','ic5'];
+  const arrs=['ar1','ar2','ar3','ar4','ar5'];
+  const lines=['al1','al2','al3','al4','al5'];
+  for(let k=1;k<=6;k++) document.getElementById('ic'+k).className='picon';
+  for(let k=1;k<=5;k++) document.getElementById('ar'+k).className='parr';
+
+  for(let i=0;i<5;i++){
+    await W(480);
+    document.getElementById(lines[i]).classList.add('vis');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('run');
+    document.getElementById(icons[i]).classList.add('act');
+    if(i>0) document.getElementById(arrs[i-1]).classList.add('act');
+    await W(700);
+    document.getElementById(lines[i]).querySelector('.adot').classList.remove('run');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('ok');
+    document.getElementById(icons[i]).classList.remove('act');
+    document.getElementById(icons[i]).classList.add('done');
+  }
+  document.getElementById('ar5').classList.add('act');
+  document.getElementById('ic6').classList.add('done');
+  await W(350);
+  alog.classList.remove('vis');
+  body.classList.add('vis');
+
+  for(const b of BLOCKS){ await renderBlock(body,b,wrap); await W(50); }
+
+  btn.disabled=false; btn.innerHTML='↺ Re-run Analysis'; busy=false;
+}
+
+async function renderBlock(container,block,scroll){
+  if(block.t==='h'){
+    const el=document.createElement('div');
+    el.className='sec fu'; el.textContent=block.v;
+    container.appendChild(el); await W(80);
+  } else if(block.t==='o'){
+    const card=document.createElement('div');
+    card.className='opt-card '+block.color+' fu';
+    // Header
+    const head=document.createElement('div');
+    head.className='opt-head';
+    head.innerHTML=`<span class="opt-label">${block.label}</span><span class="opt-tag">${block.tag}</span>`;
+    card.appendChild(head);
+    // Rows
+    const rowsDiv=document.createElement('div');
+    rowsDiv.className='opt-rows';
+    for(const r of block.rows){
+      const row=document.createElement('div');
+      row.className='opt-row';
+      row.innerHTML=`<span class="opt-rk">${r.k}</span><span class="opt-rv">${r.v}</span>`;
+      rowsDiv.appendChild(row);
+    }
+    card.appendChild(rowsDiv);
+    // Why explanation
+    const why=document.createElement('div');
+    why.className='opt-why'; why.innerHTML=block.why;
+    card.appendChild(why);
+    // Urgent note
+    if(block.urgent){
+      const urg=document.createElement('div');
+      urg.className='opt-urgent'; urg.textContent='⏰ '+block.urgent;
+      card.appendChild(urg);
+    }
+    container.appendChild(card);
+    if(scroll) scroll.scrollTop=scroll.scrollHeight;
+    await W(120);
+  } else {
+    const wrap=document.createElement('div');
+    wrap.className='item '+(block.c||'');
+    const ic=document.createElement('div');
+    ic.className='item-ic'; ic.textContent=block.i;
+    const tx=document.createElement('div'); tx.className='aitxt';
+    wrap.appendChild(ic); wrap.appendChild(tx);
+    container.appendChild(wrap);
+    await typeOut(tx,block.v,scroll);
+  }
+}
+
+async function typeOut(el,html,scroll){
+  const toks=html.split(/(<[^>]+>)/g);
+  let built='';
+  el.innerHTML='<span class="cursor"></span>';
+  for(const tok of toks){
+    if(tok.startsWith('<')){ built+=tok; }
+    else{
+      for(const w of tok.split(/(\s+)/)){
+        built+=w;
+        el.innerHTML=built+'<span class="cursor"></span>';
+        if(scroll) scroll.scrollTop=scroll.scrollHeight;
+        if(w.trim()) await W(9+Math.random()*7);
+      }
+    }
+  }
+  el.innerHTML=built;
+  if(scroll) scroll.scrollTop=scroll.scrollHeight;
+}
+
+function W(n){return new Promise(r=>setTimeout(r,n));}
+</script>
+</body>
+</html>

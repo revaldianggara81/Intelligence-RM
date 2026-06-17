@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Yahoo Finance News API",
+    "description": "Ambil berita keuangan terkini dari Yahoo Finance berdasarkan ticker atau kata kunci.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://query1.finance.yahoo.com",
+      "description": "Yahoo Finance Query Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Yahoo Finance public endpoint — no API key required. Leave blank."
+      }
+    }
+  },
+  "paths": {
+    "/v1/finance/search": {
+      "get": {
+        "operationId": "searchFinanceNews",
+        "summary": "Cari berita keuangan Yahoo Finance",
+        "description": "Mencari berita dan data keuangan dari Yahoo Finance. Gunakan ticker seperti IHSG, BBCA.JK, USDIDR=X, atau kata kunci seperti Indonesia economy.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Kata kunci atau ticker Yahoo Finance. Contoh: IHSG, BBCA.JK, USDIDR=X",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newsCount",
+            "in": "query",
+            "required": false,
+            "description": "Jumlah berita yang dikembalikan. Default 5, maksimum 10.",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          },
+          {
+            "name": "quotesCount",
+            "in": "query",
+            "required": false,
+            "description": "Jumlah data harga saham. Gunakan 0 untuk berita saja.",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hasil pencarian berita",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

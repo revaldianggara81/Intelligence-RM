@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario 3 — Portfolio Alert System | Oracle AI · Danamon POC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c1a;--surface:#0b1529;--card:#0f1e35;--card2:#132442;
+  --border:#1a2e4a;--border2:#1f3759;
+  --red:#c74634;--red2:#e04828;
+  --cyan:#00ccff;--gold:#ffb830;--ok:#00d47e;--warn:#ffa726;--danger:#ff4f4f;
+  --txt:#dce8f5;--txt2:#6e8aaa;--txt3:#3d5570;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--disp:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:100vh;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:12px;}
+.opill{background:var(--red);color:#fff;font-family:var(--disp);font-weight:700;font-size:13px;padding:4px 10px;border-radius:5px;}
+.htitle{font-size:12.5px;color:var(--txt2);}
+.chip{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.cr{background:rgba(255,79,79,.12);color:var(--danger);border:1px solid rgba(255,79,79,.3);}
+.cb{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.25);}
+.cg{background:rgba(255,167,38,.1);color:var(--warn);border:1px solid rgba(255,167,38,.25);}
+
+.sc-badge{background:linear-gradient(135deg,#160606,#12040a,var(--card2));border:1px solid rgba(255,79,79,.25);border-radius:12px;padding:1.5rem 2rem;margin:1.5rem 2rem .5rem;display:flex;align-items:center;gap:1.5rem;}
+.sc-num{font-family:var(--disp);font-size:3rem;font-weight:800;color:rgba(255,79,79,.2);line-height:1;}
+.sc-tag{font-family:var(--mono);font-size:9.5px;color:var(--danger);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.sc-title{font-family:var(--disp);font-size:1.5rem;font-weight:700;line-height:1.15;}
+.sc-sub{font-size:12.5px;color:var(--txt2);margin-top:4px;line-height:1.5;}
+.sc-chips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 2rem 3rem;}
+.grid{display:grid;grid-template-columns:290px 1fr;gap:14px;margin-top:1rem;}
+
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:72px;}
+.cc-head{padding:1.1rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border);}
+.ava{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0a7a4a,#0fb86e);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:17px;color:#fff;margin-bottom:10px;}
+.cname{font-size:15px;font-weight:600;}.cid{font-size:10.5px;color:var(--txt3);font-family:var(--mono);margin-top:2px;}
+.tier-r{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;margin-top:7px;background:rgba(110,138,170,.12);color:var(--txt2);border:1px solid rgba(110,138,170,.22);}
+.alert-flag{margin:.7rem 1.1rem;padding:9px 11px;border-radius:8px;font-size:11.5px;line-height:1.55;display:flex;align-items:flex-start;gap:6px;background:rgba(255,79,79,.08);border:1px solid rgba(255,79,79,.25);color:#ff7474;}
+.cc-body{padding:.7rem 1.1rem;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.032);font-size:12px;}
+.dr:last-child{border-bottom:none;}.dk{color:var(--txt2);}.dv{font-family:var(--mono);font-size:11px;font-weight:500;}
+.dv.g{color:var(--ok);}.dv.d{color:var(--danger);}
+
+/* Market ticker */
+.mkt-box{background:rgba(255,79,79,.05);border:1px solid rgba(255,79,79,.2);border-radius:10px;padding:.8rem 1.1rem;margin:10px 0 0;}
+.mkt-lbl{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;color:var(--danger);margin-bottom:.5rem;}
+.mkt-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11.5px;}
+.mkt-k{color:var(--txt2);font-family:var(--mono);}
+.mkt-v{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--danger);}
+.mkt-v.warn{color:var(--warn);}
+.trigger-box{background:rgba(255,167,38,.06);border:1px solid rgba(255,167,38,.25);border-radius:8px;padding:.6rem .9rem;margin-top:8px;font-size:11.5px;color:var(--warn);}
+
+.ds-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-top:12px;}
+.ds-lbl{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:.6rem;}
+.ds-item{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--txt2);padding:3px 0;line-height:1.5;}
+.ds-item .ck{color:var(--ok);flex-shrink:0;font-size:11px;}
+
+.paf{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.paf-head{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.paf-lbl{font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);}
+.paf-name{font-size:14px;font-weight:600;margin-top:1px;}
+.run-btn{padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.15s;display:flex;align-items:center;gap:7px;}
+.run-btn:hover{background:var(--red2);}.run-btn:disabled{opacity:.4;cursor:not-allowed;}
+.pipeline{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;overflow-x:auto;}
+.pstage{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:76px;}
+.picon{width:42px;height:42px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .3s;}
+.picon.act{border-color:var(--danger);background:rgba(255,79,79,.07);box-shadow:0 0 12px rgba(255,79,79,.14);}
+.picon.done{border-color:var(--ok);background:rgba(0,212,126,.07);}
+.plabel{font-size:9px;color:var(--txt2);text-align:center;font-family:var(--mono);line-height:1.3;}
+.parr{flex-shrink:0;width:26px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;transition:.25s;}
+.parr.act{color:var(--danger);}
+.alog{display:none;flex-direction:column;gap:4px;padding:.7rem 1.2rem;border-bottom:1px solid var(--border);}
+.alog.vis{display:flex;}
+.aline{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);font-family:var(--mono);opacity:0;transition:.2s;}
+.aline.vis{opacity:1;}
+.adot{width:6px;height:6px;border-radius:50%;background:var(--txt3);flex-shrink:0;}
+.adot.run{background:var(--danger);animation:pulse 1s infinite;}
+.adot.ok{background:var(--ok);}
+
+/* Severity badge */
+.sev-bar{display:none;padding:.65rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(255,79,79,.06);}
+.sev-bar.vis{display:flex;align-items:center;gap:10px;}
+.sev-badge{background:rgba(255,79,79,.18);color:var(--danger);border:1px solid rgba(255,79,79,.35);padding:4px 14px;border-radius:6px;font-size:11.5px;font-weight:700;font-family:var(--mono);white-space:nowrap;}
+.sev-txt{font-size:11.5px;color:var(--txt2);font-family:var(--mono);}
+
+.out-wrap{padding:1.2rem;min-height:320px;max-height:580px;overflow-y:auto;}
+.out-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;}
+.out-ph .ico{font-size:32px;}.out-ph .p1{font-size:13px;color:var(--txt2);}.out-ph .p2{font-size:10.5px;font-family:var(--mono);color:var(--txt3);}
+.out-body{display:none;}.out-body.vis{display:block;}
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);font-family:var(--mono);margin:1rem 0 .4rem;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:rgba(0,204,255,.1);}
+.sec:first-child{margin-top:0;}
+.item{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;margin-bottom:5px;background:rgba(255,255,255,.022);border-radius:8px;border-left:2px solid var(--cyan);font-size:12.5px;line-height:1.65;}
+.item-ic{width:17px;height:17px;border-radius:50%;background:rgba(0,204,255,.12);border:1px solid rgba(0,204,255,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:9px;color:var(--cyan);}
+.item.gold{border-left-color:var(--gold);}.item.gold .item-ic{background:rgba(255,184,48,.12);border-color:rgba(255,184,48,.28);color:var(--gold);}
+.item.green{border-left-color:var(--ok);}.item.green .item-ic{background:rgba(0,212,126,.12);border-color:rgba(0,212,126,.28);color:var(--ok);}
+.item.red{border-left-color:var(--danger);}.item.red .item-ic{background:rgba(255,79,79,.12);border-color:rgba(255,79,79,.28);color:var(--danger);}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--cyan);margin-left:1px;vertical-align:middle;animation:blink .7s infinite;}
+.opt-card{border-radius:10px;margin-bottom:8px;overflow:hidden;border:1px solid var(--border);}
+.opt-card.gold{border-color:rgba(255,184,48,.35);}
+.opt-card.blue{border-color:rgba(0,204,255,.25);}
+.opt-card.green{border-color:rgba(0,212,126,.3);}
+.opt-head{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;gap:10px;}
+.opt-card.gold .opt-head{background:rgba(255,184,48,.08);}
+.opt-card.blue .opt-head{background:rgba(0,204,255,.06);}
+.opt-card.green .opt-head{background:rgba(0,212,126,.07);}
+.opt-label{font-family:var(--disp);font-size:13.5px;font-weight:700;}
+.opt-card.gold .opt-label{color:var(--gold);}
+.opt-card.blue .opt-label{color:var(--cyan);}
+.opt-card.green .opt-label{color:var(--ok);}
+.opt-tag{font-size:9.5px;font-family:var(--mono);padding:2px 8px;border-radius:4px;}
+.opt-card.gold .opt-tag{background:rgba(255,184,48,.12);color:var(--gold);border:1px solid rgba(255,184,48,.25);}
+.opt-card.blue .opt-tag{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.22);}
+.opt-card.green .opt-tag{background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.22);}
+.opt-rows{padding:6px 13px 4px;border-bottom:1px solid rgba(255,255,255,.04);}
+.opt-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03);}
+.opt-row:last-child{border-bottom:none;}
+.opt-rk{color:var(--txt2);font-family:var(--mono);font-size:11px;}
+.opt-rv{font-weight:500;font-size:12px;}
+.opt-card.gold .opt-rv{color:var(--gold);}
+.opt-card.blue .opt-rv{color:var(--cyan);}
+.opt-card.green .opt-rv{color:var(--ok);}
+.opt-why{padding:9px 13px;font-size:12px;line-height:1.65;color:var(--txt2);background:rgba(255,255,255,.015);}
+.opt-why strong{color:var(--txt);}
+.opt-urgent{padding:6px 13px;font-size:11.5px;font-family:var(--mono);color:var(--warn);background:rgba(255,167,38,.05);border-top:1px solid rgba(255,167,38,.15);}
+.footer{text-align:center;font-size:10px;font-family:var(--mono);color:var(--txt3);padding:1.5rem 2rem;border-top:1px solid var(--border);line-height:1.9;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.15;}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes fu{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fu .28s ease forwards;}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media(max-width:800px){.grid{grid-template-columns:1fr;}.ccard{position:static;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <span class="opill">ORACLE</span>
+    <span class="htitle">AI RM Intelligence Platform &nbsp;·&nbsp; Bank Danamon POC</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <span class="chip cr">⚠ HIGH ALERT</span>
+    <span class="chip cb">Oracle DB 26ai</span>
+    <span class="chip cg">PAF Monitor</span>
+  </div>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;">
+  <div class="sc-badge">
+    <div class="sc-num">03</div>
+    <div class="sc-info">
+      <div class="sc-tag">Scenario 3 &nbsp;·&nbsp; Post-Meeting</div>
+      <div class="sc-title">Portfolio Alert System</div>
+      <div class="sc-sub" style="max-width:600px;">PAF Market Monitor Agent detects a threshold breach in real-time, triggers the Alert Engine, runs portfolio impact decomposition via Oracle 26ai semantic search, and delivers a prioritised RM action report.</div>
+      <div class="sc-chips">
+        <span class="chip cr">Market Monitor Agent</span>
+        <span class="chip cg">Alert Trigger Agent</span>
+        <span class="chip cb">Portfolio Analysis Agent</span>
+        <span style="font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.25);">Select AI Synthesis</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="ccard">
+        <div class="cc-head">
+          <div class="ava">RP</div>
+          <div class="cname">Reza Pratama</div>
+          <div class="cid">CIF: DAN-0056103 &nbsp;·&nbsp; RM: Dewi Susanti</div>
+          <div class="tier-r">Regular Customer</div>
+        </div>
+        <div class="alert-flag">🚨<div><strong>HIGH ALERT:</strong> Equity fund down <strong>−18.3%</strong> in 30 days. Loss threshold breached.</div></div>
+        <div class="cc-body">
+          <div class="dr"><span class="dk">Age</span><span class="dv">35 years</span></div>
+          <div class="dr"><span class="dk">Monthly Income</span><span class="dv g">Rp 60,000,000</span></div>
+          <div class="dr"><span class="dk">Risk Profile</span><span class="dv">Moderate–Aggressive</span></div>
+          <div class="dr"><span class="dk">Reksa Dana Saham</span><span class="dv d">Rp 250,000,000</span></div>
+          <div class="dr"><span class="dk">RDS 30-day Return</span><span class="dv d">−18.3% ⚠</span></div>
+          <div class="dr"><span class="dk">Unrealized Loss</span><span class="dv d">−Rp 45,750,000</span></div>
+          <div class="dr"><span class="dk">ORI-025</span><span class="dv g">Rp 150,000,000 (+2.1%)</span></div>
+          <div class="dr"><span class="dk">Deposito (45d)</span><span class="dv">Rp 100,000,000</span></div>
+        </div>
+        <div class="mkt-box">
+          <div class="mkt-lbl">Market Context · Live Feed</div>
+          <div class="mkt-item"><span class="mkt-k">JCI</span><span class="mkt-v">6,842 (−8.2%)</span></div>
+          <div class="mkt-item"><span class="mkt-k">USD/IDR</span><span class="mkt-v warn">16,450 (+4.2%)</span></div>
+          <div class="mkt-item"><span class="mkt-k">Consumer Sector</span><span class="mkt-v">−22.4%</span></div>
+          <div class="mkt-item"><span class="mkt-k">Tech Sector</span><span class="mkt-v">−19.8%</span></div>
+        </div>
+        <div class="trigger-box">⚡ Rule triggered: Portfolio equity loss &gt;15% in rolling 30 days</div>
+      </div>
+      <div class="ds-box">
+        <div class="ds-lbl">Data Sources · Oracle DB 26ai</div>
+        <div class="ds-item"><span class="ck">✓</span>Real-time portfolio valuation (Core Banking)</div>
+        <div class="ds-item"><span class="ck">✓</span>Alert rule engine (Product Team config)</div>
+        <div class="ds-item"><span class="ck">✓</span>Historical market events (public domain)</div>
+        <div class="ds-item"><span class="ck">✓</span>JCI &amp; sector performance feed</div>
+        <div class="ds-item"><span class="ck">✓</span>Past RM notes &amp; customer preferences</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="paf">
+        <div class="paf-head">
+          <div>
+            <div class="paf-lbl">Private Agent Factory · Portfolio Monitor</div>
+            <div class="paf-name">Portfolio Alert — Real-time RM Intervention Report</div>
+          </div>
+          <button class="run-btn" id="runBtn" onclick="runDemo()">▶ Run AI Analysis</button>
+        </div>
+        <div class="pipeline">
+          <div class="pstage"><div class="picon" id="ic1">📡</div><div class="plabel">Market<br>Monitor</div></div><div class="parr" id="ar1">→</div>
+          <div class="pstage"><div class="picon" id="ic2">🚨</div><div class="plabel">Alert Trigger<br>Agent</div></div><div class="parr" id="ar2">→</div>
+          <div class="pstage"><div class="picon" id="ic3">📉</div><div class="plabel">Portfolio<br>Analysis Agent</div></div><div class="parr" id="ar3">→</div>
+          <div class="pstage"><div class="picon" id="ic4">🗄️</div><div class="plabel">Oracle DB<br>26ai</div></div><div class="parr" id="ar4">→</div>
+          <div class="pstage"><div class="picon" id="ic5">🧠</div><div class="plabel">Select AI<br>Synthesis</div></div><div class="parr" id="ar5">→</div>
+          <div class="pstage"><div class="picon" id="ic6">⚡</div><div class="plabel">RM Alert<br>Report</div></div>
+        </div>
+        <div class="alog" id="alog">
+          <div class="aline" id="al1"><div class="adot run"></div>Market movement detected — stock market dropped significantly this morning, triggering a review of affected portfolios...</div>
+          <div class="aline" id="al2"><div class="adot"></div>Alert rule matched — Bapak Reza's equity fund has lost more than 15% in the past 30 days, crossing the alert threshold set by the Product Team...</div>
+          <div class="aline" id="al3"><div class="adot"></div>Calculating the full impact — Rp 45.75M paper loss on his equity fund, other products remain healthy...</div>
+          <div class="aline" id="al4"><div class="adot"></div>Checking how similar market drops have played out historically — strong match to a past recovery pattern found...</div>
+          <div class="aline" id="al5"><div class="adot"></div>Preparing RM brief for Dewi Susanti — what happened, what to say, and what steps to take...</div>
+        </div>
+        <div class="sev-bar" id="sevBar">
+          <div class="sev-badge">⚠ URGENT — ACTION REQUIRED</div>
+          <div class="sev-txt">Detected: 16 May 2026, 09:14 WIB &nbsp;·&nbsp; Trigger: Equity fund loss exceeded 15% in 30 days &nbsp;·&nbsp; RM Dewi Susanti must contact customer within 24 hours</div>
+        </div>
+        <div class="out-wrap" id="outWrap">
+          <div class="out-ph" id="outPh">
+            <div class="ico">⚡</div>
+            <div class="p1">Click "Run AI Analysis" to generate the portfolio alert report</div>
+            <div class="p2">Market monitoring · Alert detection · RM action brief</div>
+          </div>
+          <div class="out-body" id="outBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Oracle Private Agent Factory (PAF) &nbsp;·&nbsp; Oracle Database 26ai &nbsp;·&nbsp; Scenario 3: Portfolio Alert System &nbsp;·&nbsp; Bank Danamon POC · May 2026<br>
+  ★ All customer data is synthetic — created for POC demonstration only. Not actual Danamon customer data.
+</div>
+
+<script>
+const BLOCKS = [
+  {t:'h',v:'WHAT HAPPENED — QUICK SUMMARY'},
+  {t:'i',c:'red',i:'!',v:'<strong>Action needed today:</strong> Bapak Reza Pratama\'s equity fund (Reksa Dana Saham) has dropped <strong>18.3% over the past 30 days</strong>, resulting in a paper loss of approximately <strong>Rp 45,750,000</strong>. This has triggered an automatic alert because the loss crossed the 15% threshold set by the Product Team.'},
+  {t:'i',c:'red',i:'!',v:'His total portfolio value has fallen from approximately Rp 500,000,000 to <strong>Rp 454,250,000</strong>. RM Dewi Susanti needs to reach out to Bapak Reza <strong>today — before he notices the drop on his own</strong>. A proactive call makes a huge difference to customer trust in moments like this.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>The good news:</strong> The rest of his portfolio is completely fine. His Government Bond ORI-025 (Rp 150M) is still earning positively at +2.1% this year, and his Deposito (Rp 100M) is untouched and matures in 45 days. Only the equity fund is affected — his overall portfolio is down 9.15%, not his entire savings.'},
+
+  {t:'h',v:'WHY DID THIS HAPPEN?'},
+  {t:'i',c:'',i:'→',v:'This is not specific to Bapak Reza — the entire stock market has been affected. The Jakarta Stock Exchange (JCI) fell <strong>8.2% over the same 30 days</strong>, driven by rising trade tensions between the US and Asian countries, which caused investors globally to pull money out of stocks and move to safer assets.'},
+  {t:'i',c:'',i:'→',v:'The Rupiah has also weakened against the US Dollar (now at Rp 16,450 per USD), which hurts companies that import goods — and these companies make up a large part of the equity fund\'s holdings. That is why the fund dropped more than the market overall.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>Historical context that will reassure the customer:</strong> A very similar drop happened in March 2020 — the stock market fell around 19% in 30 days due to COVID. Within 5 months, the market had fully recovered. Customers who stayed invested came out ahead. Customers who sold locked in permanent losses.'},
+
+  {t:'h',v:'HOW BAD IS THE DAMAGE — IN NUMBERS'},
+  {t:'o',label:'Portfolio Snapshot Today',tag:'As of 16 May 2026',
+   color:'gold',
+   rows:[
+     {k:'Reksa Dana Saham (original)',v:'Rp 250,000,000'},
+     {k:'Reksa Dana Saham (today)',v:'≈ Rp 204,250,000'},
+     {k:'Paper loss (equity fund)',v:'−Rp 45,750,000 (−18.3%)'},
+     {k:'ORI-025 Government Bond',v:'Rp 150,000,000 (+2.1% ✓)'},
+     {k:'Deposito (matures in 45 days)',v:'Rp 100,000,000 (safe ✓)'},
+     {k:'Total portfolio today',v:'≈ Rp 454,250,000'},
+     {k:'Overall portfolio change',v:'−9.15% (not −18%)'},
+   ],
+   why:'<strong>Important framing for the RM:</strong> The 18.3% drop only applies to the equity fund portion. When you look at his whole portfolio — bonds, deposit, and equity fund together — the overall decline is 9.15%. This is a more reassuring number to share with the customer first. Do not lead with "your fund dropped 18%" — lead with "your overall portfolio is at Rp 454M, let me walk you through what happened."',
+   urgent:null
+  },
+
+  {t:'h',v:'YOUR ACTION PLAN'},
+  {t:'i',c:'red',i:'!',v:'<strong>Today — call Bapak Reza now.</strong> Do not wait for him to call you. Customers who receive a proactive call from their RM during a market drop are far more likely to stay calm, stay invested, and remain loyal to the bank. This is the most important thing you can do today.'},
+  {t:'i',c:'gold',i:'★',v:'<strong>At the meeting — propose a partial rebalancing.</strong> Suggest moving Rp 50–75M from the equity fund into a Fixed Income Fund (Reksa Dana Pendapatan Tetap). This reduces the risk in his portfolio without selling everything. He keeps some exposure to the market recovery while feeling more protected.'},
+  {t:'i',c:'',i:'→',v:'<strong>In 45 days — when his Deposito matures.</strong> Do not let it auto-renew without a conversation. This is a good moment to discuss whether to keep it in a deposit or redeploy into a government bond (ORI) or a balanced fund to take advantage of any market recovery.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>Within 2 weeks — schedule a portfolio review meeting.</strong> Sit down with Bapak Reza and review the full picture. Show him where his portfolio stands, explain the recovery outlook, and agree on a plan going forward. This turns a crisis moment into a relationship-deepening opportunity.'},
+
+  {t:'h',v:'WHAT TO SAY IN THE CALL'},
+  {t:'i',c:'gold',i:'★',v:'"Bapak Reza, kami menghubungi karena kami memantau kondisi pasar dan ingin memastikan Bapak mendapat informasi langsung dari kami. Reksa Dana Saham Bapak memang terpengaruh, tapi ORI dan Deposito Bapak aman — boleh saya jelaskan situasinya secara lengkap?"'},
+  {t:'i',c:'',i:'→',v:'Reassure him with history: <em>"Situasi seperti ini pernah terjadi sebelumnya — pada 2020 pasar turun lebih dalam dari ini dan pulih dalam 5 bulan. Menjual sekarang akan mengunci kerugian menjadi permanen, sedangkan kalau kita tetap sabar, potensi pemulihannya masih ada."</em>'},
+  {t:'i',c:'',i:'→',v:'If he wants to do something: <em>"Kalau Bapak ingin mengurangi risiko, kita bisa pindahkan sebagian ke produk yang lebih stabil — tidak harus semua dijual. Saya bisa siapkan beberapa opsi sebelum kita bertemu."</em>'},
+  {t:'i',c:'green',i:'✓',v:'Close the call by booking the meeting: <em>"Boleh kita jadwalkan pertemuan minggu ini? Saya ingin duduk bersama Bapak dan susun strategi yang tepat berdasarkan situasi portofolio Bapak secara keseluruhan."</em>'},
+
+  {t:'h',v:'WHAT THE MARKET IS EXPECTED TO DO'},
+  {t:'i',c:'',i:'→',v:'Most market analysts expect the Jakarta Stock Exchange to stabilise and begin recovering in Q3 2026 (July–September), as US–Asia trade discussions are expected to progress. Indonesia\'s economy is still growing at 4.8% — the domestic fundamentals are healthy.'},
+  {t:'i',c:'green',i:'✓',v:'Bank Indonesia may reduce interest rates later this year. When interest rates go down, it typically pushes money back into stocks and mutual funds — which is good for Bapak Reza\'s equity fund. Staying invested positions him to benefit from that shift.'},
+
+  {t:'h',v:'THREE THINGS NOT TO DO'},
+  {t:'i',c:'red',i:'!',v:'<strong>Do not recommend selling everything.</strong> Selling the entire equity fund now would turn a paper loss into a real, permanent loss of Rp 45.75M. Once sold at the bottom, he cannot participate in any future recovery.'},
+  {t:'i',c:'red',i:'!',v:'<strong>Do not delay the call.</strong> Every day without contact increases the risk that Bapak Reza becomes anxious, makes a decision on his own, or considers moving his money to another bank. The first call should happen today.'},
+  {t:'i',c:'',i:'→',v:'<strong>Do not open with the loss number.</strong> Start the conversation by acknowledging the market situation broadly, then confirm his stable positions (ORI and Deposito are fine), and only then discuss the equity fund impact. This framing keeps the customer calm and receptive.'},
+];
+
+let busy=false;
+
+async function runDemo(){
+  if(busy) return; busy=true;
+  const btn=document.getElementById('runBtn');
+  const alog=document.getElementById('alog');
+  const ph=document.getElementById('outPh');
+  const body=document.getElementById('outBody');
+  const wrap=document.getElementById('outWrap');
+  const sev=document.getElementById('sevBar');
+
+  btn.disabled=true; btn.textContent='⟳ Analysing…';
+  ph.style.display='none';
+  body.classList.remove('vis'); body.innerHTML='';
+  alog.classList.add('vis');
+  sev.classList.remove('vis');
+
+  for(let k=1;k<=6;k++) document.getElementById('ic'+k).className='picon';
+  for(let k=1;k<=5;k++) document.getElementById('ar'+k).className='parr';
+
+  const icons=['ic1','ic2','ic3','ic4','ic5'];
+  const arrs=['ar1','ar2','ar3','ar4','ar5'];
+  const lines=['al1','al2','al3','al4','al5'];
+
+  for(let i=0;i<5;i++){
+    await W(480);
+    document.getElementById(lines[i]).classList.add('vis');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('run');
+    document.getElementById(icons[i]).classList.add('act');
+    if(i>0) document.getElementById(arrs[i-1]).classList.add('act');
+    await W(700);
+    document.getElementById(lines[i]).querySelector('.adot').classList.remove('run');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('ok');
+    document.getElementById(icons[i]).classList.remove('act');
+    document.getElementById(icons[i]).classList.add('done');
+  }
+  document.getElementById('ar5').classList.add('act');
+  document.getElementById('ic6').classList.add('done');
+  await W(300);
+  alog.classList.remove('vis');
+  sev.classList.add('vis');
+  await W(200);
+  body.classList.add('vis');
+
+  for(const b of BLOCKS){ await renderBlock(body,b,wrap); await W(50); }
+
+  btn.disabled=false; btn.innerHTML='↺ Re-run Analysis'; busy=false;
+}
+
+async function renderBlock(container,block,scroll){
+  if(block.t==='h'){
+    const el=document.createElement('div');
+    el.className='sec fu'; el.textContent=block.v;
+    container.appendChild(el); await W(80);
+  } else if(block.t==='o'){
+    const card=document.createElement('div');
+    card.className='opt-card '+block.color+' fu';
+    const head=document.createElement('div'); head.className='opt-head';
+    head.innerHTML=`<span class="opt-label">${block.label}</span><span class="opt-tag">${block.tag}</span>`;
+    card.appendChild(head);
+    const rowsDiv=document.createElement('div'); rowsDiv.className='opt-rows';
+    for(const r of block.rows){
+      const row=document.createElement('div'); row.className='opt-row';
+      row.innerHTML=`<span class="opt-rk">${r.k}</span><span class="opt-rv">${r.v}</span>`;
+      rowsDiv.appendChild(row);
+    }
+    card.appendChild(rowsDiv);
+    const why=document.createElement('div'); why.className='opt-why'; why.innerHTML=block.why;
+    card.appendChild(why);
+    if(block.urgent){
+      const urg=document.createElement('div'); urg.className='opt-urgent'; urg.textContent='⏰ '+block.urgent;
+      card.appendChild(urg);
+    }
+    container.appendChild(card);
+    if(scroll) scroll.scrollTop=scroll.scrollHeight;
+    await W(120);
+  } else {
+    const wrap=document.createElement('div');
+    wrap.className='item '+(block.c||'');
+    const ic=document.createElement('div'); ic.className='item-ic'; ic.textContent=block.i;
+    const tx=document.createElement('div'); tx.className='aitxt';
+    wrap.appendChild(ic); wrap.appendChild(tx);
+    container.appendChild(wrap);
+    await typeOut(tx,block.v,scroll);
+  }
+}
+
+async function typeOut(el,html,scroll){
+  const toks=html.split(/(<[^>]+>)/g);
+  let built='';
+  el.innerHTML='<span class="cursor"></span>';
+  for(const tok of toks){
+    if(tok.startsWith('<')){ built+=tok; }
+    else{
+      for(const w of tok.split(/(\s+)/)){
+        built+=w;
+        el.innerHTML=built+'<span class="cursor"></span>';
+        if(scroll) scroll.scrollTop=scroll.scrollHeight;
+        if(w.trim()) await W(9+Math.random()*7);
+      }
+    }
+  }
+  el.innerHTML=built;
+  if(scroll) scroll.scrollTop=scroll.scrollHeight;
+}
+
+function W(n){return new Promise(r=>setTimeout(r,n));}
+</script>
+</body>
+</html>

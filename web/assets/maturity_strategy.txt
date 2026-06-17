@@ -1,0 +1,33 @@
+# Strategi Handling Deposito Jatuh Tempo
+
+## Urgensi Berdasarkan Sisa Hari
+- 0-14 hari: URGENT - hubungi dalam 24 jam, siapkan alternatif konkret
+- 15-30 hari: HIGH - jadwalkan pertemuan minggu ini
+- 31-60 hari: MEDIUM - kirim notifikasi, rencanakan meeting
+
+## Strategi Retensi per Tier
+### Nasabah Prioritas (AUM > 1M)
+- Tawarkan special rate deposito +0.25% dari rate standard
+- Sertakan layanan premium: dedicated line, airport lounge invitation
+- Siapkan proposal tertulis dengan proyeksi return
+
+### Nasabah Privilege (AUM 500jt - 1M)
+- Tawarkan bundling produk (deposito + reksa dana)
+- Highlight benefit tier Privilege yang sedang dinikmati
+- Tawarkan konsultasi portfolio gratis
+
+### Nasabah Regular
+- Fokus pada kemudahan dan keamanan
+- Bandingkan dengan rate kompetitor secara general
+- Informasikan promo rate jika ada
+
+## Objection Handling
+- "Rate terlalu rendah" → Bandingkan dengan risiko dan likuiditas produk lain
+- "Mau pindah bank" → Tanyakan apa yang kurang, tawarkan match rate
+- "Sudah punya investasi lain" → Dorong diversifikasi, jangan all-in satu instrumen
+- "Tidak perlu return tinggi" → Fokus pada keamanan dan kepastian pendapatan
+
+## Script Template
+"Bapak/Ibu [nama], kami menginformasikan bahwa deposito [nama produk] senilai [nominal] 
+akan jatuh tempo pada [tanggal]. Kami sudah menyiapkan beberapa pilihan menarik yang 
+sesuai dengan profil investasi Bapak/Ibu. Apakah ada waktu untuk saya presentasikan?"

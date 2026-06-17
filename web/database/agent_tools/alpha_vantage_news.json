@@ -1,0 +1,132 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Alpha Vantage News API",
+    "description": "Berita keuangan dan sentimen pasar dari Alpha Vantage.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://www.alphavantage.co",
+      "description": "Alpha Vantage API Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Dummy — auth ditangani via query parameter apikey"
+      }
+    }
+  },
+  "paths": {
+    "/query": {
+      "get": {
+        "operationId": "getFinanceNews",
+        "summary": "Ambil berita keuangan dan sentimen pasar",
+        "description": "Mengambil berita terkini dari Alpha Vantage NEWS_SENTIMENT.",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "GANTI_DENGAN_API_KEY_ANDA"
+            },
+            "description": "Alpha Vantage API Key — daftar gratis di alphavantage.co"
+          },
+          {
+            "name": "function",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["NEWS_SENTIMENT"],
+              "default": "NEWS_SENTIMENT"
+            },
+            "description": "Selalu gunakan NEWS_SENTIMENT"
+          },
+          {
+            "name": "tickers",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Ticker saham. Contoh: FOREX:USDIDR, BBCA.JKT, BMRI.JKT. Kosongkan jika pakai topics."
+          },
+          {
+            "name": "topics",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "economy_macro",
+                "economy_fiscal",
+                "economy_monetary",
+                "financial_markets",
+                "ipo",
+                "earnings",
+                "forex"
+              ]
+            },
+            "description": "Topik: economy_macro, economy_monetary, financial_markets, forex."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["LATEST", "EARLIEST", "RELEVANCE"],
+              "default": "LATEST"
+            },
+            "description": "Urutan berita. Gunakan LATEST."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "minimum": 1,
+              "maximum": 50
+            },
+            "description": "Jumlah berita. Default 5."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar berita keuangan dengan sentimen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "feed": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title":                   { "type": "string" },
+                          "url":                     { "type": "string" },
+                          "time_published":          { "type": "string" },
+                          "summary":                 { "type": "string" },
+                          "source":                  { "type": "string" },
+                          "overall_sentiment_label": { "type": "string" },
+                          "overall_sentiment_score": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

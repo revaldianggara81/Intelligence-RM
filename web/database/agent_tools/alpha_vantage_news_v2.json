@@ -1,0 +1,12 @@
+// components.securitySchemes  → ADA  (untuk validasi upload)
+// "security": [...]           → TIDAK ADA di root
+// "security": [...]           → TIDAK ADA di operation
+
+"parameters": [
+  {
+    "name": "apikey",
+    "in": "query",
+    "required": true,
+    "schema": { "type": "string", "default": "API_KEY_ANDA" }
+  }
+]

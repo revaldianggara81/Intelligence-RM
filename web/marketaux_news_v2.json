@@ -1,0 +1,111 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Marketaux Financial News API",
+    "description": "Berita keuangan dan saham dari Marketaux untuk Relationship Manager Bank Danamon.",
+    "version": "2.0.0"
+  },
+  "host": "api.marketaux.com",
+  "basePath": "/",
+  "schemes": ["https"],
+  "produces": ["application/json"],
+  "securityDefinitions": {},
+  "paths": {
+    "/v1/news/all": {
+      "get": {
+        "operationId": "getMarketNews",
+        "summary": "Ambil berita keuangan dan saham",
+        "description": "Mengambil berita keuangan terkini dari Marketaux. Gunakan search untuk topik umum (kurs, IHSG, BI Rate), atau symbols untuk saham IDX spesifik (BBCA.IDX, BBRI.IDX).",
+        "tags": ["News"],
+        "parameters": [
+          {
+            "name": "api_token",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "GgXAof7TnNHGLDpYkf3hKm2MOth3ksJRijQWC4ha"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Keyword pencarian berita. Contoh: rupiah kurs dollar, IHSG saham Indonesia, BI Rate suku bunga, inflasi ekonomi. Gunakan ini untuk topik umum tanpa ticker saham."
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Ticker saham IDX format KODE.IDX. Contoh: BBCA.IDX, BBRI.IDX, BMRI.IDX, BDMN.IDX, TLKM.IDX. Gunakan ini untuk saham spesifik, jangan digabung dengan search."
+          },
+          {
+            "name": "countries",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 5
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "published_at"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berita berhasil diambil.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "found": {"type": "integer"},
+                    "returned": {"type": "integer"}
+                  }
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {"type": "string"},
+                      "description": {"type": "string"},
+                      "url": {"type": "string"},
+                      "published_at": {"type": "string"},
+                      "source": {"type": "string"},
+                      "entities": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "symbol": {"type": "string"},
+                            "name": {"type": "string"},
+                            "sentiment_score": {"type": "number"}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {"description": "API token tidak valid."},
+          "429": {"description": "Rate limit tercapai. Free tier: 100 request per hari."}
+        }
+      }
+    }
+  },
+  "tags": [{"name": "News"}]
+}

@@ -1,0 +1,63 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Finnhub Financial News API",
+    "description": "Berita keuangan dari Finnhub untuk Relationship Manager Bank Danamon. Sumber berita mencakup Yahoo Finance, Reuters, Bloomberg, dan 50+ media global.",
+    "version": "2.0.0"
+  },
+  "host": "finnhub.io",
+  "basePath": "/",
+  "schemes": ["https"],
+  "produces": ["application/json"],
+  "securityDefinitions": {},
+  "paths": {
+    "/api/v1/news": {
+      "get": {
+        "operationId": "getMarketNews",
+        "summary": "Ambil berita pasar keuangan terkini",
+        "description": "Mengambil headline berita pasar keuangan dari Yahoo Finance, Reuters, Bloomberg, dan 50+ sumber global. Gunakan category general untuk berita pasar saham dan ekonomi, forex untuk berita kurs rupiah dan nilai tukar, merger untuk berita akuisisi perusahaan.",
+        "tags": ["News"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "D8ic8vpr01qm63bba91gd8ic8vpr01qm63bba920"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "general",
+            "enum": ["general", "forex", "merger"],
+            "description": "Kategori berita: general = pasar saham, IHSG, ekonomi makro, perbankan Indonesia, saham BBCA/BBRI/BMRI. forex = kurs rupiah, USDIDR, nilai tukar. merger = merger dan akuisisi perusahaan."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar berita berhasil diambil.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category": {"type": "string"},
+                  "datetime": {"type": "integer", "description": "Unix timestamp"},
+                  "headline": {"type": "string", "description": "Judul berita"},
+                  "source": {"type": "string", "description": "Sumber berita"},
+                  "summary": {"type": "string", "description": "Ringkasan berita"},
+                  "url": {"type": "string", "description": "URL berita lengkap"}
+                }
+              }
+            }
+          },
+          "401": {"description": "API token tidak valid."},
+          "429": {"description": "Rate limit tercapai."}
+        }
+      }
+    }
+  },
+  "tags": [{"name": "News"}]
+}

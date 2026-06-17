@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario 2a — Product Recommendation Engine | Oracle AI · Danamon POC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c1a;--surface:#0b1529;--card:#0f1e35;--card2:#132442;
+  --border:#1a2e4a;--border2:#1f3759;
+  --red:#c74634;--red2:#e04828;
+  --cyan:#00ccff;--gold:#ffb830;--ok:#00d47e;--warn:#ffa726;--danger:#ff4f4f;
+  --txt:#dce8f5;--txt2:#6e8aaa;--txt3:#3d5570;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--disp:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:100vh;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:12px;}
+.opill{background:var(--red);color:#fff;font-family:var(--disp);font-weight:700;font-size:13px;padding:4px 10px;border-radius:5px;}
+.htitle{font-size:12.5px;color:var(--txt2);}
+.chip{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.ca{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.25);}
+.cb{background:rgba(255,184,48,.1);color:var(--gold);border:1px solid rgba(255,184,48,.25);}
+.cc{background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.25);}
+.sc-badge{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border2);border-radius:12px;padding:1.5rem 2rem;margin:1.5rem 2rem .5rem;display:flex;align-items:center;gap:1.5rem;}
+.sc-num{font-family:var(--disp);font-size:3rem;font-weight:800;color:var(--border2);line-height:1;}
+.sc-tag{font-family:var(--mono);font-size:9.5px;color:var(--cyan);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.sc-title{font-family:var(--disp);font-size:1.5rem;font-weight:700;line-height:1.15;}
+.sc-sub{font-size:12.5px;color:var(--txt2);margin-top:4px;line-height:1.5;}
+.sc-chips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 2rem 3rem;}
+.grid{display:grid;grid-template-columns:290px 1fr;gap:14px;margin-top:1rem;}
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:72px;}
+.cc-head{padding:1.1rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border);}
+.ava{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1a5fa3,#2979d4);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:17px;color:#fff;margin-bottom:10px;}
+.cname{font-size:15px;font-weight:600;}.cid{font-size:10.5px;color:var(--txt3);font-family:var(--mono);margin-top:2px;}
+.tier-r{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;margin-top:7px;background:rgba(110,138,170,.12);color:var(--txt2);border:1px solid rgba(110,138,170,.22);}
+.info-flag{margin:.7rem 1.1rem;padding:9px 11px;border-radius:8px;font-size:11.5px;line-height:1.55;display:flex;align-items:flex-start;gap:6px;background:rgba(0,204,255,.07);border:1px solid rgba(0,204,255,.2);color:#40d9ff;}
+.cc-body{padding:.7rem 1.1rem;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.032);font-size:12px;}
+.dr:last-child{border-bottom:none;}.dk{color:var(--txt2);}.dv{font-family:var(--mono);font-size:11px;font-weight:500;}
+.dv.g{color:var(--ok);}.dv.w{color:var(--warn);}
+.score-box{background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.8rem 1.1rem;margin:10px 1.1rem;}
+.score-lbl{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;color:var(--txt3);margin-bottom:.5rem;}
+.score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.score-name{font-size:11.5px;color:var(--txt2);}
+.score-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;margin:0 10px;}
+.score-bar{height:100%;border-radius:2px;transition:width 1s ease;}
+.score-val{font-family:var(--mono);font-size:11px;color:var(--ok);font-weight:500;min-width:28px;text-align:right;}
+.ds-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-top:12px;}
+.ds-lbl{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:.6rem;}
+.ds-item{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--txt2);padding:3px 0;line-height:1.5;}
+.ds-item .ck{color:var(--ok);flex-shrink:0;font-size:11px;}
+.paf{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.paf-head{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.paf-lbl{font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);}
+.paf-name{font-size:14px;font-weight:600;margin-top:1px;}
+.run-btn{padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.15s;display:flex;align-items:center;gap:7px;}
+.run-btn:hover{background:var(--red2);}.run-btn:disabled{opacity:.4;cursor:not-allowed;}
+.pipeline{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;overflow-x:auto;}
+.pstage{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:76px;}
+.picon{width:42px;height:42px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .3s;}
+.picon.act{border-color:var(--cyan);background:rgba(0,204,255,.08);box-shadow:0 0 12px rgba(0,204,255,.15);}
+.picon.done{border-color:var(--ok);background:rgba(0,212,126,.07);}
+.plabel{font-size:9px;color:var(--txt2);text-align:center;font-family:var(--mono);line-height:1.3;}
+.parr{flex-shrink:0;width:26px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;transition:.25s;}
+.parr.act{color:var(--cyan);}
+.alog{display:none;flex-direction:column;gap:4px;padding:.7rem 1.2rem;border-bottom:1px solid var(--border);}
+.alog.vis{display:flex;}
+.aline{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);font-family:var(--mono);opacity:0;transition:.2s;}
+.aline.vis{opacity:1;}
+.adot{width:6px;height:6px;border-radius:50%;background:var(--txt3);flex-shrink:0;}
+.adot.run{background:var(--cyan);animation:pulse 1s infinite;}
+.adot.ok{background:var(--ok);}
+.out-wrap{padding:1.2rem;min-height:320px;max-height:560px;overflow-y:auto;}
+.out-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;}
+.out-ph .ico{font-size:32px;}.out-ph .p1{font-size:13px;color:var(--txt2);}.out-ph .p2{font-size:10.5px;font-family:var(--mono);color:var(--txt3);}
+.out-body{display:none;}.out-body.vis{display:block;}
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);font-family:var(--mono);margin:1rem 0 .4rem;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:rgba(0,204,255,.1);}
+.sec:first-child{margin-top:0;}
+.item{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;margin-bottom:5px;background:rgba(255,255,255,.022);border-radius:8px;border-left:2px solid var(--cyan);font-size:12.5px;line-height:1.65;}
+.item-ic{width:17px;height:17px;border-radius:50%;background:rgba(0,204,255,.12);border:1px solid rgba(0,204,255,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:9px;color:var(--cyan);}
+.item.gold{border-left-color:var(--gold);}.item.gold .item-ic{background:rgba(255,184,48,.12);border-color:rgba(255,184,48,.28);color:var(--gold);}
+.item.green{border-left-color:var(--ok);}.item.green .item-ic{background:rgba(0,212,126,.12);border-color:rgba(0,212,126,.28);color:var(--ok);}
+.item.red{border-left-color:var(--danger);}.item.red .item-ic{background:rgba(255,79,79,.12);border-color:rgba(255,79,79,.28);color:var(--danger);}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--cyan);margin-left:1px;vertical-align:middle;animation:blink .7s infinite;}
+.footer{text-align:center;font-size:10px;font-family:var(--mono);color:var(--txt3);padding:1.5rem 2rem;border-top:1px solid var(--border);line-height:1.9;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.15;}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes fu{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fu .28s ease forwards;}
+@keyframes barfill{from{width:0;}to{width:var(--target);}}
+.opt-card{border-radius:10px;margin-bottom:8px;overflow:hidden;border:1px solid var(--border);}
+.opt-card.gold{border-color:rgba(255,184,48,.35);}
+.opt-card.blue{border-color:rgba(0,204,255,.25);}
+.opt-card.green{border-color:rgba(0,212,126,.3);}
+.opt-head{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;gap:10px;}
+.opt-card.gold .opt-head{background:rgba(255,184,48,.08);}
+.opt-card.blue .opt-head{background:rgba(0,204,255,.06);}
+.opt-card.green .opt-head{background:rgba(0,212,126,.07);}
+.opt-label{font-family:var(--disp);font-size:13.5px;font-weight:700;}
+.opt-card.gold .opt-label{color:var(--gold);}
+.opt-card.blue .opt-label{color:var(--cyan);}
+.opt-card.green .opt-label{color:var(--ok);}
+.opt-tag{font-size:9.5px;font-family:var(--mono);padding:2px 8px;border-radius:4px;}
+.opt-card.gold .opt-tag{background:rgba(255,184,48,.12);color:var(--gold);border:1px solid rgba(255,184,48,.25);}
+.opt-card.blue .opt-tag{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.22);}
+.opt-card.green .opt-tag{background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.22);}
+.opt-rows{padding:6px 13px 4px;border-bottom:1px solid rgba(255,255,255,.04);}
+.opt-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03);}
+.opt-row:last-child{border-bottom:none;}
+.opt-rk{color:var(--txt2);font-family:var(--mono);font-size:11px;}
+.opt-rv{font-weight:500;font-size:12px;}
+.opt-card.gold .opt-rv{color:var(--gold);}
+.opt-card.blue .opt-rv{color:var(--cyan);}
+.opt-card.green .opt-rv{color:var(--ok);}
+.opt-why{padding:9px 13px;font-size:12px;line-height:1.65;color:var(--txt2);background:rgba(255,255,255,.015);}
+.opt-why strong{color:var(--txt);}
+.opt-urgent{padding:6px 13px;font-size:11.5px;font-family:var(--mono);color:var(--warn);background:rgba(255,167,38,.05);border-top:1px solid rgba(255,167,38,.15);}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media(max-width:800px){.grid{grid-template-columns:1fr;}.ccard{position:static;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <span class="opill">ORACLE</span>
+    <span class="htitle">AI RM Intelligence Platform &nbsp;·&nbsp; Bank Danamon POC</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <span class="chip ca">Pre-Meeting</span>
+    <span class="chip ca">Oracle DB 26ai</span>
+    <span class="chip cb">Profile Matching</span>
+  </div>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;">
+  <div class="sc-badge">
+    <div class="sc-num">2a</div>
+    <div class="sc-info">
+      <div class="sc-tag">Scenario 2a &nbsp;·&nbsp; Pre-Meeting</div>
+      <div class="sc-title">Product Recommendation Engine</div>
+      <div class="sc-sub">PAF Profile Agent matches the customer's financial persona against the product catalog using Oracle 26ai vector similarity scoring to produce a ranked, justified recommendation list.</div>
+      <div class="sc-chips">
+        <span class="chip ca">Profile Agent</span>
+        <span class="chip cb">Product Match Agent</span>
+        <span class="chip cc">Select AI Synthesis</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="ccard">
+        <div class="cc-head">
+          <div class="ava">SW</div>
+          <div class="cname">Sari Wijaya</div>
+          <div class="cid">CIF: DAN-0028349 &nbsp;·&nbsp; RM: Budi Hartanto</div>
+          <div class="tier-r">Regular Customer</div>
+        </div>
+        <div class="info-flag">💡<div>AUM Rp 620M — strong growth &amp; education funding needs identified by PAF Profile Agent.</div></div>
+        <div class="cc-body">
+          <div class="dr"><span class="dk">Age</span><span class="dv">42 years</span></div>
+          <div class="dr"><span class="dk">Monthly Income</span><span class="dv g">Rp 85,000,000</span></div>
+          <div class="dr"><span class="dk">Risk Profile</span><span class="dv">Moderate</span></div>
+          <div class="dr"><span class="dk">Investment Horizon</span><span class="dv">5–10 years</span></div>
+          <div class="dr"><span class="dk">Financial Goals</span><span class="dv">Wealth + Education</span></div>
+          <div class="dr"><span class="dk">Total AUM</span><span class="dv g">Rp 620,000,000</span></div>
+          <div class="dr"><span class="dk">Deposito</span><span class="dv">Rp 300,000,000</span></div>
+          <div class="dr"><span class="dk">Reksa Dana Campuran</span><span class="dv">Rp 200,000,000</span></div>
+          <div class="dr"><span class="dk">Tabungan</span><span class="dv">Rp 120,000,000</span></div>
+          <div class="dr"><span class="dk">Children</span><span class="dv">Ages 10 &amp; 13</span></div>
+        </div>
+        <div class="score-box" id="scoreBox" style="display:none;">
+          <div class="score-lbl">How Well Each Product Category Fits Ibu Sari</div>
+          <div class="score-row">
+            <span class="score-name">Equity Suitability</span>
+            <div class="score-bar-wrap"><div class="score-bar" id="sb1" style="width:0;background:var(--ok);--target:87%"></div></div>
+            <span class="score-val">87%</span>
+          </div>
+          <div class="score-row">
+            <span class="score-name">Fixed Income Fit</span>
+            <div class="score-bar-wrap"><div class="score-bar" id="sb2" style="width:0;background:var(--cyan);--target:91%"></div></div>
+            <span class="score-val">91%</span>
+          </div>
+          <div class="score-row">
+            <span class="score-name">Education Product</span>
+            <div class="score-bar-wrap"><div class="score-bar" id="sb3" style="width:0;background:var(--gold);--target:94%"></div></div>
+            <span class="score-val">94%</span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-box">
+        <div class="ds-lbl">Information Used to Build This Recommendation</div>
+        <div class="ds-item"><span class="ck">✓</span>Total savings &amp; investment breakdown</div>
+        <div class="ds-item"><span class="ck">✓</span>Customer goals, risk appetite, investment timeline</div>
+        <div class="ds-item"><span class="ck">✓</span>Full Danamon product catalog (current rates &amp; terms)</div>
+        <div class="ds-item"><span class="ck">✓</span>Insights from similar customer profiles</div>
+        <div class="ds-item"><span class="ck">✓</span>Active leads &amp; campaign matching logic</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="paf">
+        <div class="paf-head">
+          <div>
+            <div class="paf-lbl">Private Agent Factory · Product Match Engine</div>
+            <div class="paf-name">Product Recommendation — RM &amp; Customer View</div>
+          </div>
+          <button class="run-btn" id="runBtn" onclick="runDemo()">▶ Run AI Analysis</button>
+        </div>
+        <div class="pipeline">
+          <div class="pstage"><div class="picon" id="ic1">🗄️</div><div class="plabel">Oracle DB<br>26ai</div></div><div class="parr" id="ar1">→</div>
+          <div class="pstage"><div class="picon" id="ic2">👤</div><div class="plabel">Profile<br>Agent</div></div><div class="parr" id="ar2">→</div>
+          <div class="pstage"><div class="picon" id="ic3">📦</div><div class="plabel">Product<br>Catalog Agent</div></div><div class="parr" id="ar3">→</div>
+          <div class="pstage"><div class="picon" id="ic4">📊</div><div class="plabel">Match<br>Score Agent</div></div><div class="parr" id="ar4">→</div>
+          <div class="pstage"><div class="picon" id="ic5">🧠</div><div class="plabel">Select AI<br>Synthesis</div></div><div class="parr" id="ar5">→</div>
+          <div class="pstage"><div class="picon" id="ic6">💡</div><div class="plabel">Ranked<br>Recommendations</div></div>
+        </div>
+        <div class="alog" id="alog">
+          <div class="aline" id="al1"><div class="adot run"></div>Reviewing Ibu Sari's full savings, investments, and financial goals...</div>
+          <div class="aline" id="al2"><div class="adot"></div>Customer profile confirmed: Rp 620M total savings, Moderate risk appetite, 5–10 year horizon, Wealth + Education goals...</div>
+          <div class="aline" id="al3"><div class="adot"></div>Checking all available Danamon products — filtering to those that match her risk level and timeline...</div>
+          <div class="aline" id="al4"><div class="adot"></div>Shortlisted 6 products that are a strong fit — ranking them by how well they suit her goals...</div>
+          <div class="aline" id="al5"><div class="adot"></div>Preparing personalised recommendation summary and suggested conversation for RM Budi Hartanto...</div>
+        </div>
+        <div class="out-wrap" id="outWrap">
+          <div class="out-ph" id="outPh">
+            <div class="ico">💡</div>
+            <div class="p1">Click "Run AI Analysis" to generate product recommendations</div>
+            <div class="p2">Customer profile review · Product matching · RM recommendation</div>
+          </div>
+          <div class="out-body" id="outBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Oracle Private Agent Factory (PAF) &nbsp;·&nbsp; Oracle Database 26ai &nbsp;·&nbsp; Scenario 2a: Product Recommendation Engine &nbsp;·&nbsp; Bank Danamon POC · May 2026<br>
+  ★ All customer data is synthetic — created for POC demonstration only. Not actual Danamon customer data.
+</div>
+
+<script>
+const BLOCKS = [
+  {t:'h',v:'ABOUT THIS CUSTOMER'},
+  {t:'i',c:'',i:'→',v:'Ibu Sari Wijaya is 42 years old with a monthly income of Rp 85,000,000. She has <strong>Rp 620,000,000 in total savings and investments</strong> with Danamon, two children aged 10 and 13, and a 5–10 year investment window. Her two main goals are growing her wealth over time and making sure her children\'s university fees are covered.'},
+  {t:'i',c:'gold',i:'★',v:'Her current portfolio is <strong>too heavily concentrated in deposits</strong> — Rp 300M sits in a Deposito earning a fixed rate, which is safe but not growing. For someone her age with her income and timeline, she has room to put some funds into products that can grow faster without taking on excessive risk.'},
+  {t:'i',c:'green',i:'✓',v:'Based on her profile, three products are a strong fit right now, plus a dedicated education savings plan for her children. The AI has cross-checked these against customers with a similar background — the results consistently show good outcomes for this combination.'},
+
+  {t:'h',v:'RECOMMENDATION 1 — REKSA DANA SAHAM (EQUITY FUND)'},
+  {t:'o',label:'Reksa Dana Saham',tag:'Growth · 5–10 Year Horizon',
+   color:'gold',
+   rows:[
+     {k:'Suggested placement',v:'Rp 100,000,000'},
+     {k:'Expected annual growth',v:'9–12% per year (long-term avg)'},
+     {k:'Best for',v:'Wealth growth over 5–10 years'},
+     {k:'Risk level',v:'Medium — value can go up and down'},
+     {k:'Minimum hold period',v:'3–5 years recommended'},
+   ],
+   why:'<strong>Why recommend this to Ibu Sari?</strong> Right now, only 32% of her savings is in growth products (her existing Reksa Dana Campuran). For someone aged 42 with stable income and a 10-year horizon, putting some funds into an equity fund is entirely appropriate and could meaningfully grow her wealth. Adding Rp 100M brings her growth allocation to a healthier level. The key message for the RM: this is not a gamble — it is a planned, long-term placement that she does not need to touch for several years.',
+   urgent:null
+  },
+
+  {t:'h',v:'RECOMMENDATION 2 — ORI-027 GOVERNMENT BOND'},
+  {t:'o',label:'ORI-027 Obligasi Negara',tag:'Safe Income · Government Guaranteed',
+   color:'blue',
+   rows:[
+     {k:'Suggested placement',v:'Rp 150,000,000'},
+     {k:'Interest rate',v:'6.5% per year (fixed)'},
+     {k:'Annual income earned',v:'Rp 9,750,000 (paid every 6 months)'},
+     {k:'Guaranteed by',v:'Government of Indonesia'},
+     {k:'Subscription closes',v:'30 May 2026 — limited window'},
+   ],
+   why:'<strong>Why recommend this?</strong> Ibu Sari currently has no government bonds in her portfolio. ORI-027 is one of the safest investments available — it is backed by the Indonesian government, pays a fixed 6.5% per year, and pays out every 6 months. It gives her a predictable income stream while her equity fund works on long-term growth. This is a good balance: one product grows, the other pays regular income. Subscription closes 30 May 2026, so act now.',
+   urgent:'ORI-027 subscription window closes 30 May 2026. Process before the deadline.'
+  },
+
+  {t:'h',v:'RECOMMENDATION 3 — REKSA DANA PENDAPATAN TETAP (FIXED INCOME FUND)'},
+  {t:'o',label:'Reksa Dana Pendapatan Tetap',tag:'Stable Returns · Flexible Access',
+   color:'green',
+   rows:[
+     {k:'Suggested placement',v:'Rp 100,000,000'},
+     {k:'Expected annual return',v:'5–7% per year'},
+     {k:'Can withdraw anytime?',v:'Yes — within 1–3 business days'},
+     {k:'Risk level',v:'Low — less volatile than equity'},
+     {k:'Dividend option',v:'Quarterly payout available'},
+   ],
+   why:'<strong>Why recommend this?</strong> This product sits between a Deposito (very safe, locked) and an equity fund (higher growth, less liquid). It earns more than a standard deposit but can still be accessed within a few days if Ibu Sari needs the money for something important. It is ideal as a medium-term buffer — funds she does not need to touch for a year or two but wants to keep accessible. It rounds out her portfolio with a stable middle layer.',
+   urgent:null
+  },
+
+  {t:'h',v:'CHILDREN\'S EDUCATION FUND'},
+  {t:'i',c:'gold',i:'★',v:'<strong>Danamon Asuransi Pendidikan</strong> is specifically designed for parents like Ibu Sari. A monthly premium of Rp 5–8M builds a guaranteed education fund that pays out when each child reaches university age — Child 1 in 2030, Child 2 in 2033. Importantly, the payout amount is <strong>guaranteed regardless of market conditions</strong>.'},
+  {t:'i',c:'',i:'→',v:'<strong>Why this matters:</strong> Without a dedicated education fund, Ibu Sari would need to sell other investments to pay for university — possibly at a bad time in the market. This product removes that risk entirely. Her children\'s education is locked in, no matter what happens to the economy or equity markets between now and 2030.'},
+  {t:'i',c:'green',i:'✓',v:'The product also includes life insurance coverage, meaning if anything happens to Ibu Sari, the policy continues to fund the children\'s education automatically. Customers with a similar profile who enrolled in this product consistently rate it highly and almost never withdraw early.'},
+
+  {t:'h',v:'ADDITIONAL PRODUCTS TO MENTION'},
+  {t:'i',c:'',i:'→',v:'<strong>Upgrade Tabungan to Premium Saving Account:</strong> Her current Tabungan balance of Rp 120M qualifies for the Premium Saving Account, which pays a higher daily interest rate. This is a free upgrade, takes 5 minutes to arrange, and she earns more from money she already has parked here.'},
+  {t:'i',c:'green',i:'✓',v:'<strong>Travel &amp; Medical Insurance Bundle (through Adira partner):</strong> Rp 8.5M/year for family coverage — covers her and both children for travel and medical emergencies. Given her income level and two dependants, this is strong value and a natural conversation to have once she has decided on the investment products.'},
+
+  {t:'h',v:'HOW TO OPEN THE CONVERSATION'},
+  {t:'i',c:'gold',i:'★',v:'"Ibu Sari, kami sudah me-review portofolio Ibu dan menyiapkan beberapa rekomendasi yang menurut kami paling cocok untuk tujuan keuangan Ibu — mulai dari pertumbuhan jangka panjang sampai jaminan dana pendidikan untuk putra-putri Ibu."'},
+  {t:'i',c:'gold',i:'★',v:'"Yang menarik, ada kesempatan bagus sekarang karena ORI-027 masih buka sampai akhir bulan ini. Kalau Ibu tertarik, kita bisa proses sekalian hari ini sebelum window-nya tutup."'},
+  {t:'i',c:'green',i:'✓',v:'<strong>Tip for the RM:</strong> Start with the education fund if Ibu Sari seems to respond strongly to family topics. Parents often connect emotionally with a product that protects their children\'s future — use that as the anchor before moving to the investment products.'},
+];
+
+let busy=false;
+async function runDemo(){
+  if(busy) return; busy=true;
+  const btn=document.getElementById('runBtn');
+  const alog=document.getElementById('alog');
+  const ph=document.getElementById('outPh');
+  const body=document.getElementById('outBody');
+  const wrap=document.getElementById('outWrap');
+
+  btn.disabled=true; btn.textContent='⟳ Analysing…';
+  ph.style.display='none';
+  body.classList.remove('vis'); body.innerHTML='';
+  alog.classList.add('vis');
+  document.getElementById('scoreBox').style.display='none';
+
+  for(let k=1;k<=6;k++) document.getElementById('ic'+k).className='picon';
+  for(let k=1;k<=5;k++) document.getElementById('ar'+k).className='parr';
+
+  const icons=['ic1','ic2','ic3','ic4','ic5'];
+  const arrs=['ar1','ar2','ar3','ar4','ar5'];
+  const lines=['al1','al2','al3','al4','al5'];
+
+  for(let i=0;i<5;i++){
+    await W(480);
+    document.getElementById(lines[i]).classList.add('vis');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('run');
+    document.getElementById(icons[i]).classList.add('act');
+    if(i>0) document.getElementById(arrs[i-1]).classList.add('act');
+    await W(700);
+    document.getElementById(lines[i]).querySelector('.adot').classList.remove('run');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('ok');
+    document.getElementById(icons[i]).classList.remove('act');
+    document.getElementById(icons[i]).classList.add('done');
+  }
+  document.getElementById('ar5').classList.add('act');
+  document.getElementById('ic6').classList.add('done');
+
+  // Animate score bars
+  const sb=document.getElementById('scoreBox');
+  sb.style.display='block';
+  await W(200);
+  document.getElementById('sb1').style.cssText='width:87%;background:var(--ok);transition:width 1s ease;';
+  document.getElementById('sb2').style.cssText='width:91%;background:var(--cyan);transition:width 1s ease;';
+  document.getElementById('sb3').style.cssText='width:94%;background:var(--gold);transition:width 1s ease;';
+
+  await W(350);
+  alog.classList.remove('vis');
+  body.classList.add('vis');
+
+  for(const b of BLOCKS){ await renderBlock(body,b,wrap); await W(50); }
+  btn.disabled=false; btn.innerHTML='↺ Re-run Analysis'; busy=false;
+}
+
+async function renderBlock(container,block,scroll){
+  if(block.t==='h'){
+    const el=document.createElement('div');
+    el.className='sec fu'; el.textContent=block.v;
+    container.appendChild(el); await W(80);
+  } else if(block.t==='o'){
+    const card=document.createElement('div');
+    card.className='opt-card '+block.color+' fu';
+    const head=document.createElement('div'); head.className='opt-head';
+    head.innerHTML=`<span class="opt-label">${block.label}</span><span class="opt-tag">${block.tag}</span>`;
+    card.appendChild(head);
+    const rowsDiv=document.createElement('div'); rowsDiv.className='opt-rows';
+    for(const r of block.rows){
+      const row=document.createElement('div'); row.className='opt-row';
+      row.innerHTML=`<span class="opt-rk">${r.k}</span><span class="opt-rv">${r.v}</span>`;
+      rowsDiv.appendChild(row);
+    }
+    card.appendChild(rowsDiv);
+    const why=document.createElement('div'); why.className='opt-why'; why.innerHTML=block.why;
+    card.appendChild(why);
+    if(block.urgent){
+      const urg=document.createElement('div'); urg.className='opt-urgent'; urg.textContent='⏰ '+block.urgent;
+      card.appendChild(urg);
+    }
+    container.appendChild(card);
+    if(scroll) scroll.scrollTop=scroll.scrollHeight;
+    await W(120);
+  } else {
+    const wrap=document.createElement('div');
+    wrap.className='item '+(block.c||'');
+    const ic=document.createElement('div'); ic.className='item-ic'; ic.textContent=block.i;
+    const tx=document.createElement('div'); tx.className='aitxt';
+    wrap.appendChild(ic); wrap.appendChild(tx);
+    container.appendChild(wrap);
+    await typeOut(tx,block.v,scroll);
+  }
+}
+
+async function typeOut(el,html,scroll){
+  const toks=html.split(/(<[^>]+>)/g);
+  let built='';
+  el.innerHTML='<span class="cursor"></span>';
+  for(const tok of toks){
+    if(tok.startsWith('<')){ built+=tok; }
+    else{
+      for(const w of tok.split(/(\s+)/)){
+        built+=w;
+        el.innerHTML=built+'<span class="cursor"></span>';
+        if(scroll) scroll.scrollTop=scroll.scrollHeight;
+        if(w.trim()) await W(9+Math.random()*7);
+      }
+    }
+  }
+  el.innerHTML=built;
+  if(scroll) scroll.scrollTop=scroll.scrollHeight;
+}
+function W(n){return new Promise(r=>setTimeout(r,n));}
+</script>
+</body>
+</html>

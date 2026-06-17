@@ -1,0 +1,236 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Alpha Vantage News & Sentiment API",
+    "description": "Berita keuangan dan sentimen pasar dari Alpha Vantage untuk Relationship Manager Bank Danamon. Gunakan untuk berita IHSG, emiten IDX, kurs Rupiah, BI Rate, dan makroekonomi Indonesia.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Alpha Vantage Support",
+      "url": "https://www.alphavantage.co/support"
+    }
+  },
+  "host": "www.alphavantage.co",
+  "basePath": "/",
+  "schemes": ["https"],
+  "produces": ["application/json"],
+  "securityDefinitions": {},
+  "paths": {
+    "/query": {
+      "get": {
+        "operationId": "getFinanceNews",
+        "summary": "Ambil berita keuangan dan sentimen pasar",
+        "description": "Mengambil berita keuangan terkini beserta skor sentimen dari Alpha Vantage NEWS_SENTIMENT. Gunakan parameter tickers untuk saham/valas spesifik, atau topics untuk kategori berita. Catatan: apikey wajib diisi di query parameter.",
+        "tags": ["News"],
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "NVHIJ2SLE8RW641V",
+            "description": "Alpha Vantage API key. Daftar gratis di https://www.alphavantage.co/support/#api-key. Ganti nilai default ini dengan API key Anda sebelum upload ke PAF Studio."
+          },
+          {
+            "name": "function",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "NEWS_SENTIMENT",
+            "enum": ["NEWS_SENTIMENT"],
+            "description": "Selalu gunakan NEWS_SENTIMENT untuk endpoint berita."
+          },
+          {
+            "name": "tickers",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Ticker saham atau valas. Format wajib: hanya huruf kapital, angka, titik dua (:), underscore (_), hyphen (-). DILARANG menggunakan titik (.). Contoh benar: FOREX:USDIDR. Contoh salah: BBCA.JKT. Untuk saham Indonesia kosongkan field ini dan gunakan topics."
+          },
+          {
+            "name": "topics",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "earnings",
+              "ipo",
+              "mergers_and_acquisitions",
+              "financial_markets",
+              "economy_fiscal",
+              "economy_monetary",
+              "economy_macro",
+              "energy_transportation",
+              "finance",
+              "life_sciences",
+              "manufacturing",
+              "real_estate",
+              "retail_wholesale",
+              "technology"
+            ],
+            "description": "Kategori berita: financial_markets (pasar saham), economy_monetary (BI Rate/Fed), economy_macro (makro Indonesia), finance (keuangan umum), earnings (laporan keuangan emiten). Kosongkan jika menggunakan tickers."
+          },
+          {
+            "name": "time_from",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter berita dari waktu tertentu. Format: YYYYMMDDTHHMM. Contoh: 20260601T0000 untuk berita sejak 1 Juni 2026."
+          },
+          {
+            "name": "time_to",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter berita hingga waktu tertentu. Format: YYYYMMDDTHHMM."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "LATEST",
+            "enum": ["LATEST", "EARLIEST", "RELEVANCE"],
+            "description": "Urutan hasil: LATEST (terbaru), EARLIEST (terlama), RELEVANCE (relevansi)."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 50,
+            "description": "Jumlah berita yang dikembalikan. Default 5, maksimum 50."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar berita keuangan dengan skor sentimen berhasil diambil.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "integer",
+                  "description": "Jumlah berita dalam response"
+                },
+                "sentiment_score_definition": {
+                  "type": "string",
+                  "description": "Definisi skala skor sentimen"
+                },
+                "relevance_score_definition": {
+                  "type": "string",
+                  "description": "Definisi skala skor relevansi"
+                },
+                "feed": {
+                  "type": "array",
+                  "description": "Array berita keuangan",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Judul berita"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "URL berita lengkap"
+                      },
+                      "time_published": {
+                        "type": "string",
+                        "description": "Waktu publikasi format YYYYMMDDTHHMMSS"
+                      },
+                      "authors": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Daftar penulis"
+                      },
+                      "summary": {
+                        "type": "string",
+                        "description": "Ringkasan berita"
+                      },
+                      "banner_image": {
+                        "type": "string",
+                        "description": "URL gambar banner"
+                      },
+                      "source": {
+                        "type": "string",
+                        "description": "Nama sumber berita"
+                      },
+                      "category_within_source": {
+                        "type": "string",
+                        "description": "Kategori di dalam sumber"
+                      },
+                      "source_domain": {
+                        "type": "string",
+                        "description": "Domain sumber"
+                      },
+                      "topics": {
+                        "type": "array",
+                        "description": "Topik-topik yang relevan dengan berita",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "topic": {"type": "string"},
+                            "relevance_score": {"type": "string"}
+                          }
+                        }
+                      },
+                      "overall_sentiment_score": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Skor sentimen: <= -0.35 Bearish, -0.35 s/d -0.15 Somewhat-Bearish, -0.15 s/d 0.15 Neutral, 0.15 s/d 0.35 Somewhat-Bullish, >= 0.35 Bullish"
+                      },
+                      "overall_sentiment_label": {
+                        "type": "string",
+                        "description": "Label sentimen: Bearish, Somewhat-Bearish, Neutral, Somewhat-Bullish, Bullish"
+                      },
+                      "ticker_sentiment": {
+                        "type": "array",
+                        "description": "Sentimen per ticker yang disebutkan dalam berita",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "ticker": {"type": "string"},
+                            "relevance_score": {"type": "string"},
+                            "ticker_sentiment_score": {"type": "string"},
+                            "ticker_sentiment_label": {"type": "string"}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request tidak valid. Periksa parameter yang dikirim.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Information": {"type": "string"},
+                "Note": {"type": "string"}
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit tercapai. Free tier: 25 request/hari.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Note": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "News",
+      "description": "Endpoint berita keuangan dan sentimen pasar"
+    }
+  ]
+}

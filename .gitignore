@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+mcp-servers/logs/
+mcp-servers/.env
+wallet/

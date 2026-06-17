@@ -1,0 +1,41 @@
+-- ═══════════════════════════════════════════════════════════════════
+-- Migration 08 · Call Center Transcripts
+-- Stores verbatim call-center conversation transcripts for each
+-- customer so RM officers can review and AI can summarise them.
+-- ═══════════════════════════════════════════════════════════════════
+
+BEGIN
+  EXECUTE IMMEDIATE q'[
+    CREATE TABLE CALL_CENTER_TRANSCRIPTS (
+      TRANSCRIPT_ID   NUMBER        GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      CUSTOMER_ID     VARCHAR2(50)  NOT NULL REFERENCES CUSTOMERS(CUSTOMER_ID),
+      CALL_DATE       DATE          NOT NULL,
+      CALL_DURATION   NUMBER,
+      AGENT_NAME      VARCHAR2(200),
+      CALL_TYPE       VARCHAR2(20)  DEFAULT 'INBOUND',
+      TOPIC           VARCHAR2(500),
+      TRANSCRIPT_TEXT CLOB          NOT NULL,
+      SENTIMENT       VARCHAR2(20),
+      RESOLUTION      VARCHAR2(500),
+      CREATED_AT      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+    )
+  ]';
+EXCEPTION
+  WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; END IF;
+END;
+/
+
+BEGIN
+  EXECUTE IMMEDIATE
+    'CREATE INDEX IDX_CCT_CUSTOMER ON CALL_CENTER_TRANSCRIPTS(CUSTOMER_ID)';
+EXCEPTION
+  WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; END IF;
+END;
+/
+BEGIN
+  EXECUTE IMMEDIATE
+    'CREATE INDEX IDX_CCT_DATE ON CALL_CENTER_TRANSCRIPTS(CUSTOMER_ID, CALL_DATE DESC)';
+EXCEPTION
+  WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; END IF;
+END;
+/

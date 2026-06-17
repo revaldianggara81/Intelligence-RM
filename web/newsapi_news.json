@@ -1,0 +1,244 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "NewsAPI Financial News",
+    "description": "Berita keuangan dari NewsAPI untuk Relationship Manager Bank Danamon. Support pencarian bebas keyword dalam Bahasa Indonesia maupun Inggris.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "NewsAPI Support",
+      "url": "https://newsapi.org/docs"
+    }
+  },
+  "host": "newsapi.org",
+  "basePath": "/",
+  "schemes": ["https"],
+  "produces": ["application/json"],
+  "securityDefinitions": {
+    "ApiKeyQuery": {
+      "type": "apiKey",
+      "name": "apiKey",
+      "in": "query",
+      "description": "NewsAPI key. Daftar gratis di https://newsapi.org/register"
+    }
+  },
+  "paths": {
+    "/v2/everything": {
+      "get": {
+        "operationId": "searchFinanceNews",
+        "summary": "Cari berita keuangan berdasarkan keyword",
+        "description": "Mencari berita keuangan dari ribuan sumber media berdasarkan keyword bebas. Ideal untuk berita saham IDX Indonesia, perbankan, ekonomi, dan keuangan dalam Bahasa Indonesia.",
+        "tags": ["News"],
+        "parameters": [
+          {
+            "name": "apiKey",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "225b3e264d514c5db2098fbb58bb7856",
+            "description": "NewsAPI key. Daftar gratis di https://newsapi.org/register lalu ganti nilai ini."
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Keyword pencarian berita. Gunakan nama perusahaan/saham dalam Bahasa Indonesia atau Inggris. Contoh: 'Bank BCA BBCA saham', 'IHSG pasar saham Indonesia', 'BI Rate suku bunga', 'Bank Danamon'. Bisa kombinasi: 'BCA OR BRI OR Mandiri perbankan Indonesia'"
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "id",
+            "enum": ["id", "en"],
+            "description": "Bahasa berita: id=Indonesia (untuk media lokal seperti Bisnis.com, Kontan, CNBC Indonesia), en=Inggris (untuk Reuters, Bloomberg)."
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "publishedAt",
+            "enum": ["publishedAt", "relevancy", "popularity"],
+            "description": "Urutan hasil: publishedAt (terbaru), relevancy (relevansi keyword), popularity (popularitas sumber)."
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter berita dari tanggal tertentu. Format: YYYY-MM-DD atau YYYY-MM-DDTHH:MM:SS. Contoh: 2026-06-01"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter berita hingga tanggal tertentu. Format: YYYY-MM-DD."
+          },
+          {
+            "name": "sources",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "ID sumber berita spesifik. Contoh Indonesia: bisnis-com, the-jakarta-post, antara-news. Kosongkan untuk semua sumber. CATATAN: tidak bisa dipakai bersamaan dengan language atau country."
+          },
+          {
+            "name": "domains",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Domain media spesifik. Contoh: bisnis.com,kontan.co.id,cnbcindonesia.com,detik.com,tempo.co. Pisahkan dengan koma."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Jumlah berita per halaman. Default 5, maksimum 100 (free tier: maksimum 100 total)."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 1,
+            "description": "Nomor halaman untuk pagination."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar berita berhasil diambil.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {"type": "string", "description": "ok atau error"},
+                "totalResults": {"type": "integer", "description": "Total berita yang ditemukan"},
+                "articles": {
+                  "type": "array",
+                  "description": "Array artikel berita",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string", "description": "Nama media"}
+                        }
+                      },
+                      "author": {"type": "string", "description": "Nama penulis"},
+                      "title": {"type": "string", "description": "Judul berita"},
+                      "description": {"type": "string", "description": "Deskripsi singkat"},
+                      "url": {"type": "string", "description": "URL berita lengkap"},
+                      "urlToImage": {"type": "string"},
+                      "publishedAt": {"type": "string", "description": "Waktu publikasi ISO 8601"},
+                      "content": {"type": "string", "description": "Isi berita (truncated 200 karakter pada free tier)"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key tidak valid.",
+            "schema": {"type": "object", "properties": {"status": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}}}
+          },
+          "429": {
+            "description": "Rate limit tercapai. Free tier: 100 request/hari, hasil hanya 30 hari terakhir.",
+            "schema": {"type": "object", "properties": {"status": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}}}
+          }
+        }
+      }
+    },
+    "/v2/top-headlines": {
+      "get": {
+        "operationId": "getTopHeadlines",
+        "summary": "Ambil headline berita bisnis terkini",
+        "description": "Mengambil headline berita bisnis/keuangan terpopuler hari ini. Ideal untuk morning briefing dan market update harian.",
+        "tags": ["News"],
+        "parameters": [
+          {
+            "name": "apiKey",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "default": "225b3e264d514c5db2098fbb58bb7856",
+            "description": "NewsAPI key."
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "business",
+            "enum": ["business", "general", "technology", "science", "health", "entertainment", "sports"],
+            "description": "Kategori berita. Gunakan business untuk berita keuangan dan pasar saham."
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": "id",
+            "enum": ["id", "us", "gb", "sg", "au"],
+            "description": "Kode negara: id=Indonesia, us=Amerika, sg=Singapura."
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Keyword tambahan untuk filter headline. Contoh: saham, perbankan, investasi."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Jumlah headline yang dikembalikan."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar headline berhasil diambil.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {"type": "string"},
+                "totalResults": {"type": "integer"},
+                "articles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source": {"type": "object", "properties": {"id": {"type": "string"}, "name": {"type": "string"}}},
+                      "author": {"type": "string"},
+                      "title": {"type": "string"},
+                      "description": {"type": "string"},
+                      "url": {"type": "string"},
+                      "publishedAt": {"type": "string"},
+                      "content": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "News",
+      "description": "Endpoint pencarian berita keuangan"
+    }
+  ]
+}

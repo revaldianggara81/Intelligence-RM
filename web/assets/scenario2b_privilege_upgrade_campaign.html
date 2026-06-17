@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario 2b — Privilege Upgrade Campaign | Oracle AI · Danamon POC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c1a;--surface:#0b1529;--card:#0f1e35;--card2:#132442;
+  --border:#1a2e4a;--border2:#1f3759;
+  --red:#c74634;--red2:#e04828;
+  --cyan:#00ccff;--gold:#ffb830;--ok:#00d47e;--warn:#ffa726;--danger:#ff4f4f;
+  --txt:#dce8f5;--txt2:#6e8aaa;--txt3:#3d5570;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--disp:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:100vh;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:12px;}
+.opill{background:var(--red);color:#fff;font-family:var(--disp);font-weight:700;font-size:13px;padding:4px 10px;border-radius:5px;}
+.htitle{font-size:12.5px;color:var(--txt2);}
+.chip{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.cg{background:rgba(255,184,48,.12);color:var(--gold);border:1px solid rgba(255,184,48,.3);}
+.cb{background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.25);}
+
+/* Hero */
+.sc-badge{background:linear-gradient(135deg,#1a1400,#13100a,var(--card2));border:1px solid #3d2e00;border-radius:12px;padding:1.5rem 2rem;margin:1.5rem 2rem .5rem;display:flex;align-items:center;gap:1.5rem;}
+.sc-num{font-family:var(--disp);font-size:3rem;font-weight:800;color:#3d2e00;line-height:1;}
+.sc-tag{font-family:var(--mono);font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.sc-title{font-family:var(--disp);font-size:1.5rem;font-weight:700;line-height:1.15;color:var(--gold);}
+.sc-sub{font-size:12.5px;color:var(--txt2);margin-top:4px;line-height:1.5;}
+
+/* Layout */
+.wrap{max-width:1200px;margin:0 auto;padding:0 2rem 3rem;}
+.top-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:1rem;}
+
+/* Campaign Rules Card */
+.rules-card{background:var(--card);border:1px solid rgba(255,184,48,.3);border-radius:12px;overflow:hidden;}
+.rules-head{background:linear-gradient(135deg,#1f1500,#1a1200);border-bottom:1px solid rgba(255,184,48,.2);padding:1rem 1.2rem;}
+.rules-title{font-family:var(--disp);font-size:15px;font-weight:700;color:var(--gold);margin-bottom:3px;}
+.rules-sub{font-size:11.5px;color:var(--txt2);}
+.rule-item{display:flex;align-items:flex-start;gap:10px;padding:.7rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.04);}
+.rule-item:last-child{border-bottom:none;}
+.rule-num{width:22px;height:22px;border-radius:50%;background:rgba(255,184,48,.15);border:1px solid rgba(255,184,48,.3);color:var(--gold);font-size:10px;font-family:var(--mono);font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.rule-text{font-size:12.5px;line-height:1.55;}.rule-text strong{color:var(--gold);}
+.rule-tag{display:inline-block;font-size:9.5px;font-family:var(--mono);padding:1px 7px;border-radius:3px;margin-top:4px;background:rgba(255,184,48,.1);color:var(--gold);border:1px solid rgba(255,184,48,.22);}
+
+/* Benefits Card */
+.benefits-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.benefits-head{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.2rem;}
+.benefits-title{font-size:13.5px;font-weight:600;color:var(--txt);margin-bottom:2px;}
+.benefits-sub{font-size:11px;color:var(--txt2);}
+.benefit-item{display:flex;align-items:center;gap:10px;padding:.65rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:12.5px;}
+.benefit-item:last-child{border-bottom:none;}
+.bico{font-size:16px;flex-shrink:0;}
+
+/* PAF Campaign Scanner */
+.paf{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+.paf-head{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.paf-lbl{font-size:9px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);}
+.paf-name{font-size:14px;font-weight:600;margin-top:1px;}
+.run-btn{padding:8px 20px;background:linear-gradient(135deg,#b33e00,var(--red2));color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.15s;display:flex;align-items:center;gap:7px;}
+.run-btn:hover{background:var(--red2);}.run-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Pipeline */
+.pipeline{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;overflow-x:auto;}
+.pstage{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:80px;}
+.picon{width:42px;height:42px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .3s;}
+.picon.act{border-color:var(--gold);background:rgba(255,184,48,.07);box-shadow:0 0 12px rgba(255,184,48,.15);}
+.picon.done{border-color:var(--ok);background:rgba(0,212,126,.07);}
+.plabel{font-size:9px;color:var(--txt2);text-align:center;font-family:var(--mono);line-height:1.3;}
+.parr{flex-shrink:0;width:26px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px;transition:.25s;}
+.parr.act{color:var(--gold);}
+
+/* Agent log */
+.alog{display:none;flex-direction:column;gap:4px;padding:.7rem 1.2rem;border-bottom:1px solid var(--border);}
+.alog.vis{display:flex;}
+.aline{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);font-family:var(--mono);opacity:0;transition:.2s;}
+.aline.vis{opacity:1;}
+.adot{width:6px;height:6px;border-radius:50%;background:var(--txt3);flex-shrink:0;}
+.adot.run{background:var(--gold);animation:pulse 1s infinite;}
+.adot.ok{background:var(--ok);}
+
+/* Scan stats bar */
+.scan-stats{display:none;padding:.6rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(255,184,48,.04);justify-content:space-between;align-items:center;}
+.scan-stats.vis{display:flex;}
+.ss-item{text-align:center;}
+.ss-val{font-family:var(--disp);font-size:18px;font-weight:700;}
+.ss-val.g{color:var(--gold);}.ss-val.c{color:var(--ok);}.ss-val.d{color:var(--cyan);}
+.ss-lbl{font-size:9.5px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px;}
+
+/* Customer list */
+.cust-list{padding:1.2rem;min-height:340px;max-height:580px;overflow-y:auto;}
+.cl-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;}
+.cl-ph .ico{font-size:32px;}.cl-ph .p1{font-size:13px;color:var(--txt2);}.cl-ph .p2{font-size:10.5px;font-family:var(--mono);color:var(--txt3);}
+.cl-head{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:.8rem;display:flex;align-items:center;gap:8px;}
+.cl-head::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Customer result row */
+.cust-row{background:rgba(255,255,255,.018);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-bottom:8px;cursor:pointer;transition:all .2s;opacity:0;}
+.cust-row.vis{opacity:1;}
+.cust-row:hover{border-color:var(--border2);background:rgba(255,255,255,.03);}
+.cust-row.active{border-color:rgba(255,184,48,.4);background:rgba(255,184,48,.04);}
+.cr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.cr-left{display:flex;align-items:center;gap:10px;}
+.cr-ava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+.cr-name{font-size:13.5px;font-weight:600;}
+.cr-id{font-size:10px;color:var(--txt3);font-family:var(--mono);}
+.cr-badge{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:4px;font-weight:600;}
+.cr-elig{background:rgba(0,212,126,.12);color:var(--ok);border:1px solid rgba(0,212,126,.3);}
+.cr-pend{background:rgba(255,167,38,.1);color:var(--warn);border:1px solid rgba(255,167,38,.25);}
+.cr-rules{display:flex;gap:6px;flex-wrap:wrap;}
+.rule-check{font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:3px;}
+.rc-ok{background:rgba(0,212,126,.1);color:var(--ok);border:1px solid rgba(0,212,126,.2);}
+.rc-no{background:rgba(255,79,79,.08);color:var(--danger);border:1px solid rgba(255,79,79,.2);}
+.cr-aum{font-size:11.5px;color:var(--txt2);margin-top:4px;}
+
+/* Detail pane */
+.detail-pane{display:none;margin-top:0;}
+.detail-pane.vis{display:block;}
+.dp-head{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin:1rem 0 .5rem;display:flex;align-items:center;gap:8px;}
+.dp-head::after{content:'';flex:1;height:1px;background:rgba(255,184,48,.2);}
+.dp-item{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;margin-bottom:5px;background:rgba(255,184,48,.04);border-radius:8px;border-left:2px solid var(--gold);font-size:12.5px;line-height:1.65;}
+.dp-ic{width:17px;height:17px;border-radius:50%;background:rgba(255,184,48,.12);border:1px solid rgba(255,184,48,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:9px;color:var(--gold);}
+.dp-item.blue{border-left-color:var(--cyan);}.dp-item.blue .dp-ic{background:rgba(0,204,255,.12);border-color:rgba(0,204,255,.28);color:var(--cyan);}
+.dp-item.green{border-left-color:var(--ok);}.dp-item.green .dp-ic{background:rgba(0,212,126,.12);border-color:rgba(0,212,126,.28);color:var(--ok);}
+
+.footer{text-align:center;font-size:10px;font-family:var(--mono);color:var(--txt3);padding:1.5rem 2rem;border-top:1px solid var(--border);line-height:1.9;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.15;}}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fu .3s ease forwards;}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media(max-width:800px){.top-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <span class="opill">ORACLE</span>
+    <span class="htitle">AI RM Intelligence Platform &nbsp;·&nbsp; Bank Danamon POC</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <span class="chip cg">★ Campaign</span>
+    <span class="chip cb">PAF Campaign Agent</span>
+    <span class="chip cg">Privilege Upgrade</span>
+  </div>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;">
+  <div class="sc-badge">
+    <div class="sc-num">2b</div>
+    <div style="">
+      <div class="sc-tag">Scenario 2b &nbsp;·&nbsp; Campaign Targeting</div>
+      <div class="sc-title">Potential Upgrade to Privilege</div>
+      <div class="sc-sub" style="max-width:600px;">PAF Campaign Agent scans the full RM portfolio against defined eligibility rules using Oracle DB 26ai, identifies qualifying customers, and generates personalised upgrade pitches for each.</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- Top: Rules + Benefits -->
+  <div class="top-grid">
+    <div class="rules-card">
+      <div class="rules-head">
+        <div class="rules-title">★ Campaign Eligibility Rules</div>
+        <div class="rules-sub">Configured by Danamon Product Team &nbsp;·&nbsp; PAF Rule Engine</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div class="rule-text">
+          <strong>Personal Customer</strong><br>
+          Must be an individual (personal banking) customer — not a business/corporate account.
+          <div><span class="rule-tag">TYPE = PERSONAL</span></div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div class="rule-text">
+          <strong>Not a Privilege Customer</strong> for the last 6 months<br>
+          Customer must not currently hold, or have held within the past 6 months, Danamon Privilege status.
+          <div><span class="rule-tag">PRIVILEGE_STATUS ≠ ACTIVE (last 6 months)</span></div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div class="rule-text">
+          <strong>Total AUM ≥ Rp 500,000,000</strong> in the last 3 months<br>
+          Cumulative AUM across all products must be equal to or exceed Rp 500M for at least the past 3 months.
+          <div><span class="rule-tag">AUM_3M_AVG ≥ 500,000,000 IDR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits-card">
+      <div class="benefits-head">
+        <div class="benefits-title">Privilege Tier Benefits for Eligible Customers</div>
+        <div class="benefits-sub">Danamon Privilege Programme &nbsp;·&nbsp; Source: danamon.co.id</div>
+      </div>
+      <div class="benefit-item"><span class="bico">👤</span><div><strong>Dedicated Relationship Manager</strong> — direct line, priority callback, no branch queuing</div></div>
+      <div class="benefit-item"><span class="bico">💳</span><div><strong>Cashback Privilege Debit Card</strong> — up to 5% cashback on dining &amp; travel (Programme 2025)</div></div>
+      <div class="benefit-item"><span class="bico">📈</span><div><strong>Preferential Deposit Rates</strong> — +0.25% above standard Deposito rate for Privilege holders</div></div>
+      <div class="benefit-item"><span class="bico">🏦</span><div><strong>Fee Waivers</strong> — admin, inter-bank transfer, and annual card fees waived</div></div>
+      <div class="benefit-item"><span class="bico">🛡️</span><div><strong>Priority Investment Access</strong> — early ORI/SBR subscription window, exclusive fund access</div></div>
+      <div class="benefit-item"><span class="bico">✈️</span><div><strong>Airport Lounge Access</strong> — selected lounges across Indonesia &amp; Singapore</div></div>
+    </div>
+  </div>
+
+  <!-- PAF Campaign Scanner -->
+  <div class="paf">
+    <div class="paf-head">
+      <div>
+        <div class="paf-lbl">Private Agent Factory · Campaign Eligibility Engine</div>
+        <div class="paf-name">Privilege Upgrade Campaign — Portfolio Scan &amp; RM Pitch Generator</div>
+      </div>
+      <button class="run-btn" id="runBtn" onclick="runCampaign()">▶ Run Campaign Scan</button>
+    </div>
+
+    <div class="pipeline">
+      <div class="pstage"><div class="picon" id="ic1">🗄️</div><div class="plabel">Oracle DB<br>26ai</div></div><div class="parr" id="ar1">→</div>
+      <div class="pstage"><div class="picon" id="ic2">📋</div><div class="plabel">Rule<br>Engine</div></div><div class="parr" id="ar2">→</div>
+      <div class="pstage"><div class="picon" id="ic3">🔎</div><div class="plabel">Eligibility<br>Scan Agent</div></div><div class="parr" id="ar3">→</div>
+      <div class="pstage"><div class="picon" id="ic4">🎯</div><div class="plabel">Campaign<br>Match Agent</div></div><div class="parr" id="ar4">→</div>
+      <div class="pstage"><div class="picon" id="ic5">🧠</div><div class="plabel">Select AI<br>Synthesis</div></div><div class="parr" id="ar5">→</div>
+      <div class="pstage"><div class="picon" id="ic6">★</div><div class="plabel">Eligible<br>Customer List</div></div>
+    </div>
+
+    <div class="alog" id="alog">
+      <div class="aline" id="al1"><div class="adot run"></div>[DB-26ai] Loading RM portfolio — 4,821 personal customers indexed, AUM data fetched...</div>
+      <div class="aline" id="al2"><div class="adot"></div>[PAF-RULES] Applying 3 eligibility criteria: Type=Personal · Privilege≠Active(6m) · AUM≥500M(3m)...</div>
+      <div class="aline" id="al3"><div class="adot"></div>[PAF-SCAN] Scanning 4,821 customers — 312 pass Rule 1 · 89 pass Rule 2 · 23 pass all 3 rules...</div>
+      <div class="aline" id="al4"><div class="adot"></div>[PAF-CAMPAIGN] Matching eligible customers to Privilege upgrade pitch templates...</div>
+      <div class="aline" id="al5"><div class="adot"></div>[SELECT-AI] Generating personalised RM pitch for each qualifying customer...</div>
+    </div>
+
+    <div class="scan-stats" id="scanStats">
+      <div class="ss-item"><div class="ss-val g">4,821</div><div class="ss-lbl">Customers Scanned</div></div>
+      <div class="ss-item"><div class="ss-val g">3,290</div><div class="ss-lbl">Personal Customers</div></div>
+      <div class="ss-item"><div class="ss-val g">312</div><div class="ss-lbl">Not Currently Privilege</div></div>
+      <div class="ss-item"><div class="ss-val c" id="eligCount">0</div><div class="ss-lbl">Eligible for Upgrade</div></div>
+      <div class="ss-item"><div class="ss-val" style="color:var(--warn)" id="totalAUM">—</div><div class="ss-lbl">Total Opportunity AUM</div></div>
+    </div>
+
+    <div class="cust-list" id="custList">
+      <div class="cl-ph" id="listPh">
+        <div class="ico">★</div>
+        <div class="p1">Click "Run Campaign Scan" to identify eligible customers</div>
+        <div class="p2">PAF Rule Engine · Oracle DB 26ai · Select AI pitch generator</div>
+      </div>
+      <div id="listBody" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Oracle Private Agent Factory (PAF) &nbsp;·&nbsp; Oracle Database 26ai &nbsp;·&nbsp; Scenario 2b: Privilege Upgrade Campaign &nbsp;·&nbsp; Bank Danamon POC · May 2026<br>
+  ★ All customer data is synthetic — created for POC demonstration only. Not actual Danamon customer data.
+</div>
+
+<script>
+const CUSTOMERS = [
+  {
+    id:'DAN-0028349', name:'Sari Wijaya', initials:'SW', color:'linear-gradient(135deg,#1a5fa3,#2979d4)',
+    rm:'Budi Hartanto', age:42, aum:'Rp 620,000,000', aum3m:'Rp 618M avg',
+    r1:true, r2:true, r3:true,
+    pitch:[
+      {i:'★',v:'<strong>Ibu Sari qualifies immediately.</strong> AUM Rp 620M (3-month avg Rp 618M) exceeds the Rp 500M threshold. No Privilege status for 8+ months. All 3 criteria confirmed ✓'},
+      {i:'→',v:'"Ibu Sari, kami senang kabarkan bahwa Ibu sudah memenuhi syarat untuk bergabung dengan Danamon Privilege — dengan AUM di atas Rp 500M, Ibu berhak mendapatkan layanan eksklusif mulai hari ini."'},
+      {i:'★',v:'<strong>Privilege Debit Cashback value:</strong> Estimated Rp 8–12M/year based on typical spending for her income tier (Rp 85M/month). This is the most tangible, immediate benefit to open with.'},
+      {i:'→',v:'<strong>Next step:</strong> Prepare Privilege onboarding form. Offer same-day upgrade processing. Combine with the ORI-027 and education fund discussion from Scenario 2a recommendation.'},
+    ]
+  },
+  {
+    id:'DAN-0039201', name:'Hendra Kusuma', initials:'HK', color:'linear-gradient(135deg,#7a1c8a,#a033c2)',
+    rm:'Anisa Ramadhani', age:49, aum:'Rp 890,000,000', aum3m:'Rp 875M avg',
+    r1:true, r2:true, r3:true,
+    pitch:[
+      {i:'★',v:'<strong>Bapak Hendra is a high-priority upgrade candidate.</strong> AUM Rp 890M — significantly above threshold. No Privilege in 12 months. Estimated annual Privilege value for him: Rp 15–20M in benefits.'},
+      {i:'→',v:'"Bapak Hendra, dengan total aset di atas Rp 800M, Bapak adalah salah satu nasabah kami yang paling layak untuk mendapatkan layanan Privilege — ada beberapa keuntungan yang langsung bisa Bapak rasakan."'},
+      {i:'★',v:'<strong>Priority benefit to pitch:</strong> Preferential Deposito rate (+0.25%) on his Rp 500M existing deposit = additional Rp 1,250,000/year interest income — concrete and easy to calculate in front of the customer.'},
+      {i:'→',v:'<strong>Next step:</strong> Schedule priority meeting. Bring Privilege tier comparison sheet. Also propose airport lounge access (2 international trips per year noted in KYC data).'},
+    ]
+  },
+  {
+    id:'DAN-0051847', name:'Dewi Lestari', initials:'DL', color:'linear-gradient(135deg,#0a7a4a,#12b36e)',
+    rm:'Budi Hartanto', age:38, aum:'Rp 540,000,000', aum3m:'Rp 522M avg',
+    r1:true, r2:true, r3:true,
+    pitch:[
+      {i:'★',v:'<strong>Ibu Dewi narrowly qualifies.</strong> 3-month AUM average Rp 522M — above Rp 500M threshold by 4.4%. Confirm that AUM maintains this level before processing upgrade to avoid early downgrade risk.'},
+      {i:'→',v:'"Ibu Dewi, kami perhatikan bahwa total portofolio Ibu sudah mencapai level yang memenuhi syarat untuk Privilege Danamon — ada layanan eksklusif yang ingin kami perkenalkan."'},
+      {i:'★',v:'<strong>Retention strategy:</strong> Ibu Dewi is at the borderline — combine Privilege upgrade pitch with an AUM growth discussion. Propose Rp 50M top-up into Reksa Dana to create a comfortable buffer above the Rp 500M threshold.'},
+      {i:'→',v:'<strong>Next step:</strong> Offer to review full portfolio before upgrade. Flag that maintaining AUM above Rp 500M secures ongoing Privilege benefits. Schedule follow-up in 30 days to confirm AUM stability.'},
+    ]
+  },
+  {
+    id:'DAN-0063490', name:'Rudi Santoso', initials:'RS', color:'linear-gradient(135deg,#8b4513,#c4622c)',
+    rm:'Dewi Susanti', age:55, aum:'Rp 1,200,000,000', aum3m:'Rp 1,185M avg',
+    r1:true, r2:true, r3:true,
+    pitch:[
+      {i:'★',v:'<strong>Bapak Rudi is a top-tier upgrade candidate.</strong> AUM Rp 1.2B — more than double the threshold. No Privilege in 9 months (previously declined upgrade in 2025). Address prior objection directly this time.'},
+      {i:'→',v:'"Bapak Rudi, kami tahu Bapak sebelumnya mempertimbangkan untuk tidak bergabung Privilege. Kali ini kami ingin menunjukkan secara konkret berapa nilai yang Bapak akan dapatkan — berdasarkan portofolio Bapak saat ini."'},
+      {i:'★',v:'<strong>Calculated benefit presentation:</strong> Preferential Deposito rate on Rp 800M = +Rp 2M/year. Fee waivers = Rp 1.5M/year savings. Lounge access value ≈ Rp 3M. Total: ~Rp 6.5M+ tangible annual value.'},
+      {i:'→',v:'<strong>Next step:</strong> Book an in-person meeting. Prepare a personalised Privilege benefits summary in IDR — Bapak Rudi responds better to numbers than general pitches (noted in CRM history).'},
+    ]
+  },
+  {
+    id:'DAN-0047213', name:'Mega Wulandari', initials:'MW', color:'linear-gradient(135deg,#1a3f8a,#2255c4)',
+    rm:'Anisa Ramadhani', age:33, aum:'Rp 480,000,000', aum3m:'Rp 462M avg',
+    r1:true, r2:true, r3:false,
+    pitch:[
+      {i:'→',v:'<strong>AUM below threshold:</strong> 3-month average Rp 462M — Rp 38M short of the Rp 500M eligibility requirement. Customer does NOT currently qualify but is a near-miss candidate worth nurturing.'},
+      {i:'★',v:'<strong>RM Action — Pre-qualification nurturing:</strong> Discuss AUM growth plan with Ibu Mega. A Rp 50M top-up into any product would bring her average above the threshold and trigger eligibility within 1 month.'},
+      {i:'→',v:'"Ibu Mega, Ibu sudah sangat dekat dengan level nasabah Privilege kami — hanya perlu sedikit penambahan portofolio dan Ibu langsung bisa menikmati semua keuntungannya."'},
+    ]
+  },
+];
+
+let busy=false, activeRow=null;
+
+async function runCampaign(){
+  if(busy) return; busy=true;
+  const btn=document.getElementById('runBtn');
+  const alog=document.getElementById('alog');
+  const ph=document.getElementById('listPh');
+  const lb=document.getElementById('listBody');
+
+  btn.disabled=true; btn.textContent='⟳ Scanning…';
+  ph.style.display='none'; lb.style.display='none'; lb.innerHTML='';
+  alog.classList.add('vis');
+  document.getElementById('scanStats').classList.remove('vis');
+  document.getElementById('eligCount').textContent='0';
+  document.getElementById('totalAUM').textContent='—';
+
+  for(let k=1;k<=6;k++) document.getElementById('ic'+k).className='picon';
+  for(let k=1;k<=5;k++) document.getElementById('ar'+k).className='parr';
+
+  const icons=['ic1','ic2','ic3','ic4','ic5'];
+  const arrs=['ar1','ar2','ar3','ar4','ar5'];
+  const lines=['al1','al2','al3','al4','al5'];
+
+  for(let i=0;i<5;i++){
+    await W(550);
+    document.getElementById(lines[i]).classList.add('vis');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('run');
+    document.getElementById(icons[i]).classList.add('act');
+    if(i>0) document.getElementById(arrs[i-1]).classList.add('act');
+    await W(750);
+    document.getElementById(lines[i]).querySelector('.adot').classList.remove('run');
+    document.getElementById(lines[i]).querySelector('.adot').classList.add('ok');
+    document.getElementById(icons[i]).classList.remove('act');
+    document.getElementById(icons[i]).classList.add('done');
+  }
+  document.getElementById('ar5').classList.add('act');
+  document.getElementById('ic6').classList.add('done');
+
+  await W(350);
+  alog.classList.remove('vis');
+
+  // Show scan stats with counter animation
+  document.getElementById('scanStats').classList.add('vis');
+  await W(200);
+  // Animate eligible count
+  let cnt=0; const target=4;
+  const interval=setInterval(()=>{
+    cnt++; document.getElementById('eligCount').textContent=cnt;
+    if(cnt>=target){ clearInterval(interval); document.getElementById('totalAUM').textContent='Rp 3.13T'; }
+  },180);
+
+  lb.style.display='block';
+
+  // Render eligible customers section
+  const eligHead=document.createElement('div');
+  eligHead.className='cl-head fu'; eligHead.textContent='ELIGIBLE CUSTOMERS (4 of 5 shown)';
+  lb.appendChild(eligHead);
+
+  for(const c of CUSTOMERS){
+    await W(180);
+    const row=buildRow(c);
+    lb.appendChild(row);
+    await W(30);
+    row.classList.add('vis');
+  }
+
+  btn.disabled=false; btn.innerHTML='↺ Re-scan Portfolio'; busy=false;
+}
+
+function buildRow(c){
+  const all3 = c.r1&&c.r2&&c.r3;
+  const row=document.createElement('div');
+  row.className='cust-row'; row.dataset.cid=c.id;
+  row.innerHTML=`
+    <div class="cr-top">
+      <div class="cr-left">
+        <div class="cr-ava" style="background:${c.color}">${c.initials}</div>
+        <div>
+          <div class="cr-name">${c.name}</div>
+          <div class="cr-id">${c.id} · RM: ${c.rm}</div>
+        </div>
+      </div>
+      <span class="cr-badge ${all3?'cr-elig':'cr-pend'}">${all3?'✓ ELIGIBLE':'⚠ NEAR-MISS'}</span>
+    </div>
+    <div class="cr-rules">
+      <span class="rule-check ${c.r1?'rc-ok':'rc-no'}">${c.r1?'✓':'✗'} Personal Customer</span>
+      <span class="rule-check ${c.r2?'rc-ok':'rc-no'}">${c.r2?'✓':'✗'} Not Privilege (6m)</span>
+      <span class="rule-check ${c.r3?'rc-ok':'rc-no'}">${c.r3?'✓':'✗'} AUM ≥ 500M (3m)</span>
+    </div>
+    <div class="cr-aum">AUM: ${c.aum} &nbsp;·&nbsp; 3-month avg: ${c.aum3m} &nbsp;·&nbsp; Age: ${c.age}</div>
+    <div class="detail-pane" id="dp_${c.id.replace('-','_')}"></div>
+  `;
+  row.addEventListener('click',()=>toggleDetail(row,c));
+  return row;
+}
+
+async function toggleDetail(row, c){
+  const dpId='dp_'+c.id.replace('-','_');
+  const dp=document.getElementById(dpId);
+  if(row.classList.contains('active')){
+    row.classList.remove('active');
+    dp.classList.remove('vis');
+    dp.innerHTML='';
+    return;
+  }
+  // Close other open rows
+  document.querySelectorAll('.cust-row.active').forEach(r=>{
+    r.classList.remove('active');
+    const id='dp_'+r.dataset.cid.replace('-','_');
+    const p=document.getElementById(id);
+    if(p){ p.classList.remove('vis'); p.innerHTML=''; }
+  });
+  row.classList.add('active');
+  dp.classList.add('vis');
+  dp.innerHTML='';
+
+  const head=document.createElement('div');
+  head.className='dp-head';
+  head.textContent=`SELECT AI · RM PITCH FOR ${c.name.toUpperCase()}`;
+  dp.appendChild(head);
+
+  for(const item of c.pitch){
+    await W(80);
+    const div=document.createElement('div');
+    const isGold=item.i==='★';
+    div.className='dp-item '+(isGold?'':'blue');
+    div.innerHTML=`<div class="dp-ic">${item.i}</div><div>${item.v}</div>`;
+    dp.appendChild(div);
+    div.style.animation='fu .25s ease forwards';
+  }
+}
+
+function W(n){return new Promise(r=>setTimeout(r,n));}
+</script>
+</body>
+</html>
