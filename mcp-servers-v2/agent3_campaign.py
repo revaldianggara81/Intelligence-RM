@@ -115,6 +115,72 @@ def log_campaign_outreach(customer_id: str, rm_user_id: str, campaign_id: str,
     return add_meeting_note(customer_id, rm_user_id, summary, follow_up)
 
 
+@mcp.tool()
+def send_campaign_email(to_email: str, subject: str, body: str,
+                        cc_email: str = None, customer_id: str = None,
+                        campaign_id: str = None):
+    """
+    Send a campaign outreach email to a customer or RM via SMTP Gmail.
+    Use this after generating a pitch to deliver it directly via email.
+
+    The body supports plain text with line breaks. For professional
+    formatting, use clear paragraphs and bullet points.
+
+    Args:
+        to_email: Recipient email address (customer or RM).
+        subject: Email subject line.
+        body: Email body content (plain text).
+        cc_email: Optional CC email address.
+        customer_id: Optional CUSTOMER_ID for logging purposes.
+        campaign_id: Optional CAMPAIGN_ID for logging purposes.
+    """
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASS", "")
+    smtp_from = os.getenv("SMTP_FROM", smtp_user)
+
+    if not smtp_user or not smtp_pass or smtp_pass == "your-app-password-here":
+        return {"error": "SMTP not configured. Set SMTP_USER and SMTP_PASS in .env"}
+
+    msg = MIMEMultipart()
+    msg["From"] = smtp_from
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    if cc_email:
+        msg["Cc"] = cc_email
+
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            recipients = [to_email]
+            if cc_email:
+                recipients.append(cc_email)
+            server.sendmail(smtp_user, recipients, msg.as_string())
+
+        result = {
+            "status": "sent",
+            "to": to_email,
+            "subject": subject,
+        }
+        if cc_email:
+            result["cc"] = cc_email
+        if customer_id:
+            result["customer_id"] = customer_id
+        if campaign_id:
+            result["campaign_id"] = campaign_id
+        return result
+    except Exception as e:
+        return {"error": f"Failed to send email: {str(e)}"}
+
+
 if __name__ == "__main__":
     mcp.run(
         transport="streamable-http",
@@ -122,4 +188,5 @@ if __name__ == "__main__":
         port=int(os.getenv("AGENT_CAMPAIGN_PORT", "9013")),
         middleware=[Middleware(EnsureJSONContentTypeMiddleware)],
         stateless_http=True,
+        json_response=True,
     )

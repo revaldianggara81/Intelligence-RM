@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asuransi Jiwa Unit Link — Bank Danamon</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #F8FAFC;
+    color: #1E293B;
+    font-size: 13px;
+    line-height: 1.6;
+    width: 794px; /* A4 width at 96dpi */
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1B2B50 0%, #0F1C36 100%);
+    color: white;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px 0;
+  }
+  .bank-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-box {
+    width: 36px; height: 36px;
+    background: #E31E24;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: white;
+    letter-spacing: -1px;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: white; letter-spacing: .5px; }
+  .logo-sub  { font-size: 9px; color: rgba(255,255,255,.55); letter-spacing: 1.5px; text-transform: uppercase; }
+  .valid-badge {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 9px; color: rgba(255,255,255,.75); letter-spacing: .5px;
+  }
+  .header-body {
+    padding: 24px 32px 28px;
+    display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end;
+  }
+  .cat-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 10px; color: rgba(255,255,255,.85);
+    margin-bottom: 10px;
+  }
+  .product-title {
+    font-size: 26px; font-weight: 800; color: white;
+    line-height: 1.2; margin-bottom: 8px;
+    letter-spacing: -.3px;
+  }
+  .product-desc { font-size: 12px; color: rgba(255,255,255,.65); max-width: 460px; }
+  .product-id {
+    font-size: 9px; color: rgba(255,255,255,.35);
+    font-family: 'Courier New', monospace; margin-top: 6px;
+  }
+  .header-metrics {
+    display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
+  }
+  .big-rate {
+    text-align: right;
+  }
+  .rate-val {
+    font-size: 42px; font-weight: 800; color: white; line-height: 1;
+    letter-spacing: -1px;
+  }
+  .rate-label { font-size: 10px; color: rgba(255,255,255,.55); text-align: right; }
+  .header-divider {
+    height: 4px;
+    background: linear-gradient(90deg, #8B5CF6 0%, #8B5CF688 60%, transparent 100%);
+  }
+
+  /* ── Key Metrics Strip ── */
+  .metrics-strip {
+    background: white;
+    border-bottom: 1px solid #E2E8F0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .metric {
+    padding: 16px 20px; border-right: 1px solid #F1F5F9;
+    text-align: center;
+  }
+  .metric:last-child { border-right: none; }
+  .metric-val { font-size: 16px; font-weight: 700; color: #1E293B; }
+  .metric-lbl { font-size: 9.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  .metric-sub { font-size: 9px; color: #CBD5E1; margin-top: 1px; }
+
+  /* ── Body ── */
+  .body { padding: 24px 32px; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 22px; }
+  .section-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 2px solid #8B5CF6;
+  }
+  .section-icon {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: #EDE9FE;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .section-title { font-size: 12px; font-weight: 700; color: #1E293B; text-transform: uppercase; letter-spacing: .8px; }
+
+  /* ── Features ── */
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .feature-card {
+    background: #EDE9FE;
+    border: 1px solid #8B5CF633;
+    border-radius: 8px; padding: 10px 12px;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .feature-check { font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .feature-card span { font-size: 11.5px; color: #374151; font-weight: 500; line-height: 1.4; }
+
+  /* ── Two-col layout ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ── Benefits ── */
+  .benefit-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .benefit-item { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #374151; }
+  .bullet {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+  }
+
+  /* ── Risk ── */
+  .risk-section {
+    background: #FEF3C7;
+    border: 1px solid #D9770644;
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .risk-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .risk-label-row { display: flex; align-items: center; gap: 8px; }
+  .risk-badge {
+    background: #D97706; color: white;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+  }
+  .risk-bars { display: flex; gap: 4px; }
+  .risk-bar { width: 28px; height: 8px; border-radius: 3px; }
+  .risk-desc { font-size: 11px; color: #4B5563; margin-bottom: 10px; font-style: italic; }
+  .risk-item { display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; color: #374151; margin-bottom: 5px; }
+  .risk-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+  /* ── Profile ── */
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .profile-chip {
+    background: white; border: 1px solid #E2E8F0;
+    border-radius: 8px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 11.5px; color: #374151;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .profile-icon { font-size: 12px; }
+
+  /* ── Steps ── */
+  .steps-list { display: flex; flex-direction: column; gap: 8px; }
+  .step { display: flex; align-items: flex-start; gap: 12px; font-size: 12px; color: #374151; }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ── Info box ── */
+  .info-box {
+    background: #FFF7ED; border: 1px solid #FED7AA;
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .info-box p { font-size: 11px; color: #92400E; line-height: 1.6; }
+
+  /* ── Footer ── */
+  .footer {
+    background: #1B2B50; color: rgba(255,255,255,.7);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 9.5px;
+  }
+  .footer-left { display: flex; flex-direction: column; gap: 2px; }
+  .footer-logo { font-weight: 700; color: white; font-size: 11px; }
+  .footer-right { text-align: right; }
+  .footer a { color: rgba(255,255,255,.7); text-decoration: none; }
+
+  .divider { height: 1px; background: #F1F5F9; margin: 0 0 18px; }
+
+  .tag {
+    display: inline-block;
+    background: #EDE9FE; color: #8B5CF6;
+    border: 1px solid #8B5CF644;
+    padding: 2px 8px; border-radius: 12px;
+    font-size: 9px; font-weight: 600; letter-spacing: .3px;
+  }
+
+  @media print {
+    body { width: 100%; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .metrics-strip, .risk-section, .feature-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-top">
+    <div class="bank-logo">
+      <div class="logo-box">D</div>
+      <div>
+        <div class="logo-text">Bank Danamon</div>
+        <div class="logo-sub">Intelligence RM Platform</div>
+      </div>
+    </div>
+    <div class="valid-badge">Berlaku s/d Des 2026 · PROD006</div>
+  </div>
+  <div class="header-body">
+    <div>
+      <div class="cat-pill">🛡️ Asuransi & Proteksi</div>
+      <div class="product-title">Asuransi Jiwa Unit Link</div>
+      <div class="product-desc">Proteksi jiwa sekaligus investasi reksa dana</div>
+      <div class="product-id">ID Produk: PROD006</div>
+    </div>
+    <div class="header-metrics">
+      <div class="big-rate">
+        <div class="rate-val">8%</div>
+        <div class="rate-label">Potensi Return p.a.</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-divider"></div>
+</div>
+
+<!-- ── KEY METRICS STRIP ── -->
+<div class="metrics-strip">
+  <div class="metric">
+    <div class="metric-val">Rp 2.000.000</div>
+    <div class="metric-lbl">Min. Investasi</div>
+    <div class="metric-sub">Tidak ada batas</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val">10 Tahun</div>
+    <div class="metric-lbl">Tenor</div>
+    <div class="metric-sub">Berjangka tetap</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val">8%</div>
+    <div class="metric-lbl">Potensi Return</div>
+    <div class="metric-sub">p.a.</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" style="color:#D97706">Sedang</div>
+    <div class="metric-lbl">Tingkat Risiko</div>
+    <div class="risk-bars" style="justify-content:center;margin-top:4px"><div class="risk-bar active" style="background:#D97706"></div><div class="risk-bar active" style="background:#D97706"></div><div class="risk-bar " style="background:#E5E7EB"></div></div>
+  </div>
+</div>
+
+<!-- ── BODY ── -->
+<div class="body">
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🛡️</div>
+      <div class="section-title">Fitur Unggulan</div>
+    </div>
+    <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-check" style="color:#8B5CF6">✓</div>
+      <span>Premi mulai Rp 2 juta/bulan</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-check" style="color:#8B5CF6">✓</div>
+      <span>Manfaat jiwa 200% dari total premi</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-check" style="color:#8B5CF6">✓</div>
+      <span>Investasi di reksa dana pilihan</span>
+    </div></div>
+  </div>
+
+  <!-- Two column: Benefits + Risk -->
+  <div class="two-col">
+    <!-- Benefits -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">✅</div>
+        <div class="section-title">Keunggulan Produk</div>
+      </div>
+      <ul class="benefit-list">
+    <li class="benefit-item">
+      <span class="bullet" style="background:#8B5CF6"></span>Proteksi jiwa seumur hidup (s/d usia 99 tahun)
+    </li>
+    <li class="benefit-item">
+      <span class="bullet" style="background:#8B5CF6"></span>Nilai investasi berkembang sesuai kinerja pasar
+    </li>
+    <li class="benefit-item">
+      <span class="bullet" style="background:#8B5CF6"></span>Fleksibilitas pemilihan reksa dana sesuai profil risiko
+    </li>
+    <li class="benefit-item">
+      <span class="bullet" style="background:#8B5CF6"></span>Top-up premi kapan saja sesuai kemampuan
+    </li>
+    <li class="benefit-item">
+      <span class="bullet" style="background:#8B5CF6"></span>Manfaat klaim meninggal dunia minimal 200% premi
+    </li></ul>
+    </div>
+
+    <!-- Risk -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">⚠️</div>
+        <div class="section-title">Profil & Risiko Investasi</div>
+      </div>
+      <div class="risk-section">
+        <div class="risk-header">
+          <div class="risk-label-row">
+            <span class="risk-badge">Risiko Sedang</span>
+          </div>
+          <div class="risk-bars"><div class="risk-bar active" style="background:#D97706"></div><div class="risk-bar active" style="background:#D97706"></div><div class="risk-bar " style="background:#E5E7EB"></div></div>
+        </div>
+        <div class="risk-desc">Cocok untuk investor moderat yang mencari keseimbangan antara risiko dan imbal hasil.</div>
+        
+    <div class="risk-item">
+      <span class="risk-dot" style="background:#D97706"></span>Nilai investasi dapat naik dan turun mengikuti pasar
+    </div>
+    <div class="risk-item">
+      <span class="risk-dot" style="background:#D97706"></span>Risiko kredit bergantung pada penerbit underlying
+    </div>
+    <div class="risk-item">
+      <span class="risk-dot" style="background:#D97706"></span>Potensi kerugian jangka pendek, namun mitigasi jangka panjang
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Two column: Target + Steps -->
+  <div class="two-col">
+    <!-- Target Customer -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">🎯</div>
+        <div class="section-title">Nasabah yang Tepat</div>
+      </div>
+      <div class="profile-grid">
+    <div class="profile-chip">
+      <span class="profile-icon">👤</span>Kepala keluarga usia 25–55 tahun
+    </div>
+    <div class="profile-chip">
+      <span class="profile-icon">👤</span>Profesional dengan tanggungan keluarga
+    </div>
+    <div class="profile-chip">
+      <span class="profile-icon">👤</span>Investor yang menginginkan dual benefit proteksi + investasi
+    </div>
+    <div class="profile-chip">
+      <span class="profile-icon">👤</span>Nasabah dengan horizon investasi panjang (> 10 tahun)
+    </div></div>
+    </div>
+
+    <!-- How to Invest -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">📋</div>
+        <div class="section-title">Cara Berinvestasi</div>
+      </div>
+      <div class="steps-list">
+    <div class="step">
+      <div class="step-num" style="background:#8B5CF6">1</div>
+      <span>Hubungi RM Bank Danamon Anda</span>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#8B5CF6">2</div>
+      <span>Lengkapi formulir pembukaan produk</span>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#8B5CF6">3</div>
+      <span>Siapkan dokumen: KTP, NPWP, dan buku tabungan</span>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#8B5CF6">4</div>
+      <span>Lakukan setoran awal sesuai ketentuan</span>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:#8B5CF6">5</div>
+      <span>Konfirmasi dan terima dokumen produk resmi</span>
+    </div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Disclaimer -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">ℹ️</div>
+      <div class="section-title">Informasi Penting & Disclaimer</div>
+    </div>
+    <div class="info-box">
+      <p>
+        Produk ini diterbitkan oleh <strong>PT Bank Danamon Indonesia Tbk</strong> yang terdaftar dan diawasi oleh <strong>Otoritas Jasa Keuangan (OJK)</strong>.
+        
+        
+        
+        Produk asuransi tidak dijamin oleh LPS. Manfaat investasi bergantung pada kinerja reksa dana yang dipilih.
+        Investasi mengandung risiko. Pastikan Anda telah memahami seluruh ketentuan produk sebelum berinvestasi.
+        Untuk informasi lebih lengkap, hubungi Relationship Manager Bank Danamon Anda atau kunjungi <strong>www.danamon.co.id</strong>.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <div class="footer-left">
+    <div class="footer-logo">Bank Danamon Indonesia</div>
+    <div>📞 1500 090 &nbsp;|&nbsp; ✉ cs@danamon.co.id &nbsp;|&nbsp; 🌐 www.danamon.co.id</div>
+    <div>Terdaftar &amp; Diawasi OJK &nbsp;|&nbsp; Anggota LPS</div>
+  </div>
+  <div class="footer-right">
+    <div>Dokumen ini disiapkan oleh RM Platform v2026</div>
+    <div>PROD006 · Asuransi & Proteksi</div>
+    <div style="margin-top:3px; color: rgba(255,255,255,.35); font-size:8px">
+      Data per 30 Mei 2026 · Untuk penggunaan internal RM
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.2                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      PAF_AGENT_ALERT, 3.4.2                      │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[06/24/26 02:45:07] INFO     Starting MCP server                transport.py:304
+                             'PAF_AGENT_ALERT' with transport                   
+                             'streamable-http' (stateless) on                   
+                             http://0.0.0.0:9014/mcp                            
+INFO:     Started server process [971593]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9014 (Press CTRL+C to quit)
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:54804 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.33.28.47:54820 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:33062 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:56046 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     85.217.149.64:50118 - "GET / HTTP/1.1" 404 Not Found
+INFO:     45.79.207.111:48095 - "GET / HTTP/1.1" 404 Not Found
+INFO:     173.255.225.25:63484 - "GET / HTTP/1.1" 404 Not Found
+INFO:     10.0.0.225:7694 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:7694 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:13462 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10734 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10734 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2890 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:10668 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:10668 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10668 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10668 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2520 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5436 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:11042 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:11042 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10590 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:9998 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:9998 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:9998 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:9998 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:9998 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6808 - "POST /mcp HTTP/1.1" 200 OK
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     193.8.186.29:55926 - "GET / HTTP/1.1" 404 Not Found
+INFO:     10.0.0.225:7616 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7616 - "POST /mcp HTTP/1.1" 200 OK
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     10.0.0.225:2626 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:2626 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2626 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2626 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2626 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8138 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8138 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:4558 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:4558 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:4558 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8262 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:8262 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8262 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8262 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:8262 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2766 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6934 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:6934 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:6934 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:8684 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:6762 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:5726 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     85.217.149.12:46086 - "GET / HTTP/1.1" 404 Not Found
+INFO:     85.217.149.28:45262 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:42662 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.79.190.208:42688 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:52050 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     69.164.217.74:38541 - "GET / HTTP/1.1" 404 Not Found
+INFO:     172.236.228.198:43718 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     85.217.149.61:59034 - "GET / HTTP/1.1" 404 Not Found
+INFO:     85.217.149.65:45948 - "GET / HTTP/1.1" 404 Not Found

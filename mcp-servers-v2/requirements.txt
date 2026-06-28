@@ -1,3 +1,5 @@
 fastmcp>=2.0
 oracledb>=2.0
 python-dotenv>=1.0
+yfinance>=1.0
+pandas>=2.0

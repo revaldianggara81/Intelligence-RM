@@ -138,14 +138,11 @@ router.get('/summary', requireAuth, asyncHandler(async (req, res) => {
     // RM performance — AUM, customer count, open alert count
     db.execute(`
       SELECT u.FULL_NAME, u.BRANCH,
-             COUNT(DISTINCT c.CUSTOMER_ID)  AS CNT,
-             NVL(SUM(c.TOTAL_AUM),0)        AS AUM,
-             COUNT(DISTINCT a.ALERT_ID)     AS OPEN_ALERTS
+             (SELECT COUNT(*) FROM CUSTOMERS c WHERE c.RM_USER_ID = u.USER_ID) AS CNT,
+             (SELECT NVL(SUM(c.TOTAL_AUM),0) FROM CUSTOMERS c WHERE c.RM_USER_ID = u.USER_ID) AS AUM,
+             (SELECT COUNT(*) FROM ALERTS a JOIN CUSTOMERS c ON a.CUSTOMER_ID = c.CUSTOMER_ID WHERE c.RM_USER_ID = u.USER_ID AND a.STATUS = 'Open') AS OPEN_ALERTS
         FROM RM_USERS u
-        LEFT JOIN CUSTOMERS c ON c.RM_USER_ID = u.USER_ID
-        LEFT JOIN ALERTS    a ON a.CUSTOMER_ID = c.CUSTOMER_ID AND a.STATUS = 'Open'
        WHERE u.IS_ACTIVE = 1
-       GROUP BY u.FULL_NAME, u.BRANCH
        ORDER BY AUM DESC
     `),
 

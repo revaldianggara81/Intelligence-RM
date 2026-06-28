@@ -16,9 +16,14 @@ from starlette.middleware import Middleware
 from irm_data import (
     get_customer_360 as _get_customer_360,
     search_customers,
+    search_customer_products,
+    get_aum_changes,
+    find_outlier_customers,
     get_product_catalog,
     get_alerts,
     get_meeting_notes,
+    query_table,
+    ALLOWED_TABLES,
 )
 from db import run_select_ai, run_select_ai_narrate
 from mcp_middleware import EnsureJSONContentTypeMiddleware
@@ -60,6 +65,68 @@ def find_customers(name: str = None, tier: str = None, risk_profile: str = None,
     """
     return {"customers": search_customers(name=name, tier=tier, risk_profile=risk_profile,
                                            rm_user_id=rm_user_id, kyc_status=kyc_status, limit=limit)}
+
+
+@mcp.tool()
+def find_customer_products(product_name: str = None, category: str = None,
+                           status: str = None, customer_id: str = None, limit: int = 50):
+    """
+    Search customer product holdings across all customers. Use this to
+    answer questions like "nasabah dengan produk reksadana saham",
+    "siapa yang punya deposito", or "customer holding ORI024".
+
+    Returns each holding with the customer name, tier, risk profile,
+    product name, category, amount, status, and return percentage.
+
+    Args:
+        product_name: Partial product name to search (case-insensitive),
+            e.g. "Reksa Dana Saham", "Deposito", "ORI024".
+        category: Product category filter, e.g. "reksa_dana", "deposito", "obligasi".
+        status: Holding status filter, e.g. "Active", "Matured".
+        customer_id: Optional CUSTOMER_ID to restrict to one customer.
+        limit: Max number of results (default 50).
+    """
+    results = search_customer_products(
+        product_name=product_name, category=category,
+        status=status, customer_id=customer_id, limit=limit,
+    )
+    return {"total": len(results), "holdings": results}
+
+
+@mcp.tool()
+def get_aum_change_report(min_change_pct: float = 5.0, direction: str = None, limit: int = 20):
+    """
+    Get customers whose AUM changed significantly vs previous month.
+    Use this to answer "nasabah mana yang AUM-nya turun/naik signifikan"
+    or "tampilkan perubahan AUM bulan ini".
+
+    Args:
+        min_change_pct: Minimum absolute change percentage to include (default 5%).
+        direction: "down" for drops only, "up" for growth only, None for both.
+        limit: Max results (default 20).
+    """
+    results = get_aum_changes(min_change_pct=min_change_pct, direction=direction, limit=limit)
+    return {"total": len(results), "customers": results}
+
+
+@mcp.tool()
+def detect_outlier_customers(limit: int = 20):
+    """
+    Identify customers with outlier profiles: AUM disproportionate to
+    income, portfolio allocation mismatched with risk profile, abnormal
+    AUM growth/decline, or other anomalies flagged in notes.
+
+    Criteria used:
+    - AUM/income ratio > 50x (abnormally high)
+    - Very low income (< 15M/month) with significant AUM (> 200M)
+    - AUM change > 15% month-over-month
+    - Explicitly flagged as outlier in customer notes
+
+    Args:
+        limit: Max results (default 20).
+    """
+    results = find_outlier_customers(limit=limit)
+    return {"total": len(results), "outliers": results}
 
 
 @mcp.tool()
@@ -119,6 +186,29 @@ def search_meeting_notes(customer_id: str = None, rm_user_id: str = None,
 
 
 @mcp.tool()
+def lookup_table(table_name: str, customer_id: str = None, limit: int = 50):
+    """
+    Query any IRM database table directly. Use this to access tables not
+    covered by other specific tools, such as:
+    CREDIT_CARDS, CREDIT_CARD_PAYMENTS, CUSTOMER_ASSETS, CUSTOMER_GOALS,
+    CUSTOMER_INCOME_SOURCES, CALL_CENTER_TRANSCRIPTS, RM_APPOINTMENTS,
+    RM_TASKS, DEPOSIT_PAYMENT_SCHEDULE, MARKET_DATA, PRODUCT_PERFORMANCE,
+    EXEC_AUM_MONTHLY, GOAL_TYPES, ALERT_ACTIONS, etc.
+
+    Sensitive columns (CARD_NUMBER) are automatically masked for security.
+
+    Args:
+        table_name: The table to query, e.g. "CREDIT_CARDS", "CUSTOMER_ASSETS".
+        customer_id: Optional CUSTOMER_ID to filter results for one customer.
+        limit: Max rows to return (default 50).
+    """
+    results = query_table(table_name, customer_id=customer_id, limit=limit)
+    if isinstance(results, dict) and "error" in results:
+        return results
+    return {"table": table_name.upper(), "total": len(results), "rows": results}
+
+
+@mcp.tool()
 def ask_irm_database(question: str, mode: str = "data"):
     """
     Ask any free-form natural-language question that the other structured
@@ -147,4 +237,5 @@ if __name__ == "__main__":
         port=int(os.getenv("AGENT_COPILOT_PORT", "9015")),
         middleware=[Middleware(EnsureJSONContentTypeMiddleware)],
         stateless_http=True,
+        json_response=True,
     )

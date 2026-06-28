@@ -80,6 +80,50 @@ async function analyzeAndStream(customerId, res) {
     const productDocs = await rag.searchProducts(
       `produk ${customer.RISK_PROFILE} ${customer.TIER} income ${customer.MONTHLY_INCOME}`, 6
     );
+
+    // ── Calculate suitability scores from Oracle data ─────────────────
+    const holdingsResult = await db.execute(
+      `SELECT cp.CATEGORY,
+              NVL(pc.RISK_LEVEL, 'medium')          AS RISK_LEVEL,
+              cp.AMOUNT,
+              NVL(cp.INTEREST_RATE, NVL(pc.INTEREST_RATE, 0)) AS INTEREST_RATE
+         FROM CUSTOMER_PRODUCTS cp
+         LEFT JOIN PRODUCT_CATALOG pc ON pc.PRODUCT_ID = cp.PRODUCT_ID
+        WHERE cp.CUSTOMER_ID = :1 AND UPPER(cp.STATUS) = 'ACTIVE'`,
+      [customerId]
+    );
+    const holdings = holdingsResult.rows || [];
+    const totalHeld = holdings.reduce((s, h) => s + Number(h.AMOUNT || 0), 0);
+
+    // Kesesuaian Risiko: ratio of holdings whose risk level matches customer risk profile
+    const riskMap = { conservative: 'low', moderate: 'medium', aggressive: 'high' };
+    const expectedRisk = riskMap[(customer.RISK_PROFILE || '').toLowerCase()] || 'medium';
+    const matchedAmount = holdings
+      .filter(h => (h.RISK_LEVEL || '').toLowerCase() === expectedRisk)
+      .reduce((s, h) => s + Number(h.AMOUNT || 0), 0);
+    const riskScore = totalHeld > 0
+      ? Math.min(100, Math.round((matchedAmount / totalHeld) * 100))
+      : 0;
+
+    // Potensi Return: weighted average interest rate of active holdings, normalised to 100
+    const weightedRate = totalHeld > 0
+      ? holdings.reduce((s, h) => s + Number(h.INTEREST_RATE || 0) * Number(h.AMOUNT || 0), 0) / totalHeld
+      : 0;
+    // Scale: 0% rate → 0, ≥12% rate → 100
+    const returnScore = Math.min(100, Math.round((weightedRate / 12) * 100));
+
+    // Diversifikasi: unique product categories relative to 5 (ideal breadth)
+    const uniqueCats = new Set(holdings.map(h => (h.CATEGORY || '').toLowerCase())).size;
+    const divScore = Math.min(100, Math.round((uniqueCats / 5) * 100));
+
+    res.write(`data: ${JSON.stringify({
+      type: 'scores',
+      riskScore,
+      returnScore,
+      divScore,
+    })}\n\n`);
+    // ──────────────────────────────────────────────────────────────────
+
     paf.emitStage(res, 'Product Scoring Agent', 'done', `${products.length} produk dievaluasi`);
 
     // Stage 4 — LLM recommendation

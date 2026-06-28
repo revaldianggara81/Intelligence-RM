@@ -82,6 +82,65 @@ def get_customers_by_ids(customer_ids):
 
 
 # ---------------------------------------------------------------------------
+def get_aum_changes(min_change_pct=None, direction=None, limit=50):
+    """Return customers with AUM change vs previous month, sorted by change %."""
+    sql = """
+        SELECT c.CUSTOMER_ID, c.FULL_NAME, c.TIER, c.RISK_PROFILE,
+               c.TOTAL_AUM, c.PREV_MONTH_AUM, c.MONTHLY_INCOME,
+               ROUND((c.TOTAL_AUM - c.PREV_MONTH_AUM) / NULLIF(c.PREV_MONTH_AUM, 0) * 100, 1) AS AUM_CHANGE_PCT,
+               (c.TOTAL_AUM - c.PREV_MONTH_AUM) AS AUM_CHANGE_ABS,
+               r.FULL_NAME AS RM_FULL_NAME
+        FROM CUSTOMERS c
+        LEFT JOIN RM_USERS r ON c.RM_USER_ID = r.USER_ID
+        WHERE c.PREV_MONTH_AUM IS NOT NULL AND c.PREV_MONTH_AUM > 0
+    """
+    params = {}
+    if direction == "down":
+        sql += " AND c.TOTAL_AUM < c.PREV_MONTH_AUM"
+    elif direction == "up":
+        sql += " AND c.TOTAL_AUM > c.PREV_MONTH_AUM"
+    if min_change_pct is not None:
+        sql += " AND ABS((c.TOTAL_AUM - c.PREV_MONTH_AUM) / NULLIF(c.PREV_MONTH_AUM, 0) * 100) >= :min_pct"
+        params["min_pct"] = min_change_pct
+    sql += " ORDER BY AUM_CHANGE_PCT ASC FETCH FIRST :lim ROWS ONLY"
+    params["lim"] = limit
+    return query(sql, params)
+
+
+def find_outlier_customers(limit=50):
+    """Identify customers with outlier profiles based on multiple criteria."""
+    sql = """
+        SELECT c.CUSTOMER_ID, c.FULL_NAME, c.TIER, c.RISK_PROFILE,
+               c.TOTAL_AUM, c.MONTHLY_INCOME, c.NOTES,
+               ROUND(c.TOTAL_AUM / NULLIF(c.MONTHLY_INCOME, 0), 0) AS AUM_INCOME_RATIO,
+               ROUND((c.TOTAL_AUM - c.PREV_MONTH_AUM) / NULLIF(c.PREV_MONTH_AUM, 0) * 100, 1) AS AUM_CHANGE_PCT,
+               r.FULL_NAME AS RM_FULL_NAME,
+               (SELECT LISTAGG(cp.CATEGORY || ':' || TO_CHAR(ROUND(cp.CAT_TOTAL/1e9,2)) || 'B', ', ')
+                  WITHIN GROUP (ORDER BY cp.CAT_TOTAL DESC)
+                FROM (SELECT CATEGORY, SUM(AMOUNT) AS CAT_TOTAL
+                        FROM CUSTOMER_PRODUCTS
+                       WHERE CUSTOMER_ID = c.CUSTOMER_ID
+                         AND UPPER(STATUS) IN ('ACTIVE','Active')
+                       GROUP BY CATEGORY) cp
+               ) AS ALLOCATION
+        FROM CUSTOMERS c
+        LEFT JOIN RM_USERS r ON c.RM_USER_ID = r.USER_ID
+        WHERE (
+            -- AUM/income ratio > 50x (abnormally high AUM vs income)
+            (c.MONTHLY_INCOME > 0 AND c.TOTAL_AUM / c.MONTHLY_INCOME > 50)
+            -- Or income very low but AUM significant (> 200M)
+            OR (c.MONTHLY_INCOME < 15000000 AND c.TOTAL_AUM > 200000000)
+            -- Or AUM change > 15% in either direction
+            OR (c.PREV_MONTH_AUM > 0 AND ABS((c.TOTAL_AUM - c.PREV_MONTH_AUM) / c.PREV_MONTH_AUM) > 0.15)
+            -- Or notes explicitly mention OUTLIER
+            OR UPPER(c.NOTES) LIKE '%OUTLIER%'
+        )
+        ORDER BY c.TOTAL_AUM DESC
+        FETCH FIRST :lim ROWS ONLY
+    """
+    return query(sql, {"lim": limit})
+
+
 # CUSTOMER_PRODUCTS (portfolio holdings)
 # ---------------------------------------------------------------------------
 
@@ -93,6 +152,33 @@ def get_customer_portfolio(customer_id, status=None):
         sql += " AND UPPER(STATUS) = UPPER(:status)"
         params["status"] = status
     sql += " ORDER BY AMOUNT DESC"
+    return query(sql, params)
+
+
+def search_customer_products(product_name=None, category=None, status=None,
+                             customer_id=None, limit=100):
+    """Search customer holdings across all customers with optional filters."""
+    sql = """
+        SELECT cp.*, c.FULL_NAME, c.TIER, c.RISK_PROFILE
+        FROM CUSTOMER_PRODUCTS cp
+        JOIN CUSTOMERS c ON cp.CUSTOMER_ID = c.CUSTOMER_ID
+        WHERE 1=1
+    """
+    params = {}
+    if product_name:
+        sql += " AND UPPER(cp.PRODUCT_NAME) LIKE '%' || UPPER(:product_name) || '%'"
+        params["product_name"] = product_name
+    if category:
+        sql += " AND UPPER(cp.CATEGORY) LIKE '%' || UPPER(:category) || '%'"
+        params["category"] = category
+    if status:
+        sql += " AND UPPER(cp.STATUS) = UPPER(:status)"
+        params["status"] = status
+    if customer_id:
+        sql += " AND UPPER(cp.CUSTOMER_ID) = UPPER(:customer_id)"
+        params["customer_id"] = customer_id
+    sql += " ORDER BY cp.AMOUNT DESC FETCH FIRST :lim ROWS ONLY"
+    params["lim"] = limit
     return query(sql, params)
 
 
@@ -414,3 +500,47 @@ def get_customer_360(customer_id):
             {"customer_id": customer_id},
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# GENERIC TABLE QUERY
+# ---------------------------------------------------------------------------
+
+ALLOWED_TABLES = {
+    "CREDIT_CARDS", "CREDIT_CARD_PAYMENTS", "CUSTOMER_ASSETS",
+    "CUSTOMER_GOALS", "CUSTOMER_INCOME_SOURCES", "CALL_CENTER_TRANSCRIPTS",
+    "CAMPAIGNS", "CAMPAIGN_ELIGIBILITY", "MEETING_NOTES", "RM_USERS",
+    "PRODUCT_CATALOG", "PRODUCT_PERFORMANCE", "PRODUCT_FORECASTS",
+    "ALERTS", "ALERT_ACTIONS", "ALERT_THRESHOLDS",
+    "MARKET_DATA", "MARKET_ALERT_RULES", "MARKET_ALERT_HISTORY",
+    "RM_APPOINTMENTS", "RM_TASKS", "GOAL_TYPES",
+    "DEPOSIT_PAYMENT_SCHEDULE", "EXEC_AUM_MONTHLY",
+    "CUSTOMERS", "CUSTOMER_PRODUCTS", "NOTIFICATIONS",
+    "PORTFOLIO_AI_REPORTS", "RECOMMENDATION_DOCS",
+    "CONVERSATION_HISTORY", "SCHEDULER_LOG",
+}
+
+def query_table(table_name, customer_id=None, filters=None, limit=50):
+    """Generic query against any allowed IRM table."""
+    tbl = table_name.upper().strip()
+    if tbl not in ALLOWED_TABLES:
+        return {"error": f"Table '{tbl}' is not accessible. Allowed: {sorted(ALLOWED_TABLES)}"}
+
+    sql = f"SELECT * FROM {tbl} WHERE 1=1"
+    params = {}
+
+    if customer_id:
+        sql += " AND UPPER(CUSTOMER_ID) = UPPER(:customer_id)"
+        params["customer_id"] = customer_id
+    if filters and isinstance(filters, dict):
+        for i, (col, val) in enumerate(filters.items()):
+            safe_col = col.upper().strip()
+            if safe_col.isalnum() or "_" in safe_col:
+                bind = f"f{i}"
+                sql += f" AND UPPER({safe_col}) = UPPER(:{bind})"
+                params[bind] = str(val)
+
+    sql += " ORDER BY 1 DESC FETCH FIRST :lim ROWS ONLY"
+    params["lim"] = limit
+
+    return query(sql, params)

@@ -315,13 +315,21 @@ Jika ada sumber tidak tersedia, sebutkan di sini agar RM mengetahui keterbatasan
 
     paf.emitStage(res, 'Intervention Strategy Agent', 'done', 'Strategi siap dieksekusi');
 
-    await llm.chatStream(
-      prompt,
-      llm.buildRMPreamble(alert.FULL_NAME),
-      [...marketDocs, ...profileDocs, ...noteDocs],
-      res,
-      { maxTokens: 2000 }
-    );
+    // Route through PAF when enabled, otherwise direct LLM
+    if (paf.PAF_ENABLED) {
+      const pafPrompt = `Analisis alert ${alert.ALERT_TYPE} (severity: ${alert.SEVERITY}) untuk nasabah CUSTOMER_ID: ${alert.CUSTOMER_ID} (${alert.FULL_NAME}). Triase alert ini, cek portofolio dan profil nasabah, lalu susun strategi intervensi RM.`;
+      await paf.callPAF('alert', pafPrompt, res, {
+        customerName: alert.FULL_NAME,
+      });
+    } else {
+      await llm.chatStream(
+        prompt,
+        llm.buildRMPreamble(alert.FULL_NAME),
+        [...marketDocs, ...profileDocs, ...noteDocs],
+        res,
+        { maxTokens: 2000 }
+      );
+    }
 
   } catch (err) {
     console.error('[Alert] analyzeAndStream error:', err);

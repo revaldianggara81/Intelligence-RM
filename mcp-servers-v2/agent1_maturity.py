@@ -78,4 +78,5 @@ if __name__ == "__main__":
         port=int(os.getenv("AGENT_MATURITY_PORT", "9011")),
         middleware=[Middleware(EnsureJSONContentTypeMiddleware)],
         stateless_http=True,
+        json_response=True,
     )

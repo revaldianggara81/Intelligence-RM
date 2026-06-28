@@ -1,0 +1,140 @@
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.2                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      PAF_AGENT_COPILOT, 3.4.2                    │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[06/24/26 02:45:07] INFO     Starting MCP server                transport.py:304
+                             'PAF_AGENT_COPILOT' with transport                 
+                             'streamable-http' (stateless) on                   
+                             http://0.0.0.0:9015/mcp                            
+INFO:     Started server process [971594]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9015 (Press CTRL+C to quit)
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:41464 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.33.28.47:41472 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:56744 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:50444 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     10.0.0.225:2846 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:12954 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2846 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2846 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:12954 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:3568 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:3568 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:10182 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10182 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10556 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:10556 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10556 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:10556 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:10556 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:9820 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:9820 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:7894 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:7894 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2368 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:9498 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2368 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2368 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2368 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     85.217.149.64:43486 - "GET / HTTP/1.1" 404 Not Found
+INFO:     45.33.109.8:58042 - "GET / HTTP/1.1" 404 Not Found
+INFO:     45.33.80.243:21542 - "GET / HTTP/1.1" 404 Not Found
+INFO:     69.164.217.74:46896 - "GET / HTTP/1.1" 404 Not Found
+INFO:     66.175.213.4:3498 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     118.193.65.209:35290 - "GET / HTTP/1.1" 404 Not Found
+INFO:     118.193.65.209:59240 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     118.193.65.209:59254 - "GET /robots.txt HTTP/1.1" 404 Not Found
+INFO:     118.193.65.209:59260 - "GET /sitemap.xml HTTP/1.1" 404 Not Found
+INFO:     118.193.65.209:59262 - "GET /sse HTTP/1.1" 404 Not Found
+INFO:     118.193.65.209:59278 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     118.193.65.209:59292 - "GET /mcp-sse HTTP/1.1" 404 Not Found
+INFO:     10.0.0.225:2384 - "GET /mcp HTTP/1.1" 405 Method Not Allowed
+INFO:     10.0.0.225:14670 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:14670 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:14670 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2384 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2852 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2852 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.0.0.225:2852 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.0.0.225:2852 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     85.217.149.61:50440 - "GET / HTTP/1.1" 404 Not Found
+INFO:     85.217.149.33:50350 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:47150 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.79.190.208:47174 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:49660 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     47.251.96.9:15760 - "GET / HTTP/1.1" 404 Not Found
+INFO:     47.251.96.9:15776 - "GET / HTTP/1.1" 404 Not Found
+INFO:     123.160.223.73:64588 - "GET / HTTP/1.1" 404 Not Found
+INFO:     85.217.149.48:44958 - "GET / HTTP/1.1" 404 Not Found
+INFO:     85.217.149.24:45462 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.

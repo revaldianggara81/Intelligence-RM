@@ -3,4 +3,6 @@ __pycache__/
 *.pyc
 mcp-servers/logs/
 mcp-servers/.env
+mcp-servers-v2/.env
+web/.env
 wallet/

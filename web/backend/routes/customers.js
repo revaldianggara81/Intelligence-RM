@@ -5,6 +5,7 @@ const { asyncHandler }  = require('../middleware/errorHandler');
 const customerSvc       = require('../services/customerService');
 const marketInsightSvc  = require('../services/marketInsightService');
 const goalSvc           = require('../services/goalService');
+const db                = require('../config/database');
 const audit             = require('../services/auditService');
 
 const router = express.Router();
@@ -23,12 +24,35 @@ router.get('/search', requireAuth, asyncHandler(async (req, res) => {
   res.json({ customers });
 }));
 
+async function verifyOwnership(rmUserId, customerId) {
+  const r = await db.execute(
+    'SELECT 1 FROM CUSTOMERS WHERE CUSTOMER_ID = :1 AND RM_USER_ID = :2',
+    [customerId, rmUserId]
+  );
+  return (r.rows || []).length > 0;
+}
+
 /** GET /api/customers/:id — full 360 profile */
 router.get('/:id', requireAuth, asyncHandler(async (req, res) => {
+  if (!(await verifyOwnership(req.user.userId, req.params.id))) {
+    return res.status(403).json({ error: 'Anda tidak memiliki akses ke nasabah ini' });
+  }
   const customer = await customerSvc.getById(req.params.id);
   if (!customer) return res.status(404).json({ error: 'Customer not found' });
   audit.log(req.user.userId, 'VIEW_CUSTOMER', 'CUSTOMER', req.params.id, null, req.ip).catch(() => {});
   res.json({ customer });
+}));
+
+router.get('/:id/products', requireAuth, asyncHandler(async (req, res) => {
+  if (!(await verifyOwnership(req.user.userId, req.params.id))) {
+    return res.status(403).json({ error: 'Anda tidak memiliki akses ke nasabah ini' });
+  }
+  const result = await db.execute(
+    `SELECT PRODUCT_NAME, CATEGORY, AMOUNT, INTEREST_RATE, STATUS, MATURITY_DATE, RETURN_PCT
+       FROM CUSTOMER_PRODUCTS WHERE CUSTOMER_ID = :1 ORDER BY AMOUNT DESC`,
+    [req.params.id]
+  );
+  res.json({ products: result.rows || [] });
 }));
 
 /**

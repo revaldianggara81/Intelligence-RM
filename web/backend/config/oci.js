@@ -12,6 +12,9 @@ function getProvider() {
   if (_provider) return _provider;
 
   const keyFile = path.resolve(process.env.OCI_KEY_FILE || './oci_api_key.pem');
+  if (!fs.existsSync(keyFile)) {
+    throw new Error(`OCI API key not found at ${keyFile}. Set OCI_KEY_FILE in .env or disable GenAI fallback.`);
+  }
   const privateKey = fs.readFileSync(keyFile, 'utf8');
 
   _provider = new common.SimpleAuthenticationDetailsProvider(

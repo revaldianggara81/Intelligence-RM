@@ -1,0 +1,104 @@
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.2                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      PAF_AGENT_CAMPAIGN, 3.4.2                   │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[06/24/26 02:45:07] INFO     Starting MCP server                transport.py:304
+                             'PAF_AGENT_CAMPAIGN' with                          
+                             transport 'streamable-http'                        
+                             (stateless) on                                     
+                             http://0.0.0.0:9013/mcp                            
+INFO:     Started server process [971592]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9013 (Press CTRL+C to quit)
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:50344 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.33.28.47:50360 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:40580 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.33.28.47:50710 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     147.185.133.141:62332 - "GET / HTTP/1.1" 404 Not Found
+INFO:     204.76.203.36:57940 - "GET / HTTP/1.1" 404 Not Found
+INFO:     204.76.203.36:34610 - "GET /SDK/webLanguage HTTP/1.1" 404 Not Found
+INFO:     147.185.133.139:63848 - "GET /metrics HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     8.216.16.212:54928 - "GET / HTTP/1.1" 404 Not Found
+INFO:     8.216.16.212:54938 - "GET / HTTP/1.1" 404 Not Found
+INFO:     123.160.223.75:23878 - "GET / HTTP/1.1" 404 Not Found
+INFO:     147.185.133.80:60998 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     193.8.186.29:34182 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     91.231.89.155:45711 - "GET / HTTP/1.1" 404 Not Found
+INFO:     91.196.152.209:34623 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     185.247.137.240:47243 - "GET / HTTP/1.1" 404 Not Found
+INFO:     66.228.53.174:42512 - "GET / HTTP/1.1" 404 Not Found
+INFO:     45.79.5.11:52913 - "GET / HTTP/1.1" 404 Not Found
+INFO:     172.236.228.208:56388 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     162.216.150.173:61784 - "GET / HTTP/1.1" 404 Not Found
+INFO:     147.185.133.93:58544 - "GET /metrics HTTP/1.1" 404 Not Found
+INFO:     50.116.26.161:52658 - "GET / HTTP/1.1" 404 Not Found
+INFO:     45.79.149.50:25270 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:58218 - "GET / HTTP/1.0" 404 Not Found
+INFO:     45.79.190.208:58226 - "OPTIONS / HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     45.79.190.208:57758 - "GET /nice%20ports%2C/Trinity.txt.bak HTTP/1.0" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     162.216.149.163:59318 - "GET / HTTP/1.1" 404 Not Found
+INFO:     35.203.211.197:65010 - "GET /metrics HTTP/1.1" 404 Not Found
+INFO:     87.236.176.125:46973 - "GET / HTTP/1.1" 404 Not Found
+INFO:     35.203.210.155:62212 - "GET / HTTP/1.1" 404 Not Found

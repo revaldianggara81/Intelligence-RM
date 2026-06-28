@@ -5,6 +5,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const llm            = require('../services/llmService');
 const rag            = require('../services/ragService');
 const paf            = require('../services/pafService');
+const db             = require('../config/database');
 const audit          = require('../services/auditService');
 const historySvc     = require('../services/aiHistoryService');
 const promptSvc      = require('../services/copilotPromptService');
@@ -55,11 +56,13 @@ router.post('/chat', requireAuth, (req, res) => {
   audit.log(req.user.userId, 'AI_COPILOT_CHAT', 'CUSTOMER', customerId || null, { message: message.substring(0, 200) }, req.ip).catch(() => {});
 
   const titleSnippet = message.slice(0, 80) + (message.length > 80 ? '…' : '');
+  let _resolvedCustId = customerId || null;
+
   captureSSEResult(res, async (text) => {
     await historySvc.save({
       module:     'copilot',
       userId:     req.user.userId,
-      customerId: customerId || null,
+      customerId: _resolvedCustId,
       title:      `Copilot: ${titleSnippet}`,
       result:     `Q: ${message}\n\n${text}`,
     });
@@ -67,9 +70,31 @@ router.post('/chat', requireAuth, (req, res) => {
 
   (async () => {
     try {
+      // Auto-detect customer from message if no customerId provided
+      let resolvedCustomerId = customerId || null;
+      if (!resolvedCustomerId) {
+        try {
+          const custSearch = await db.execute(
+            `SELECT CUSTOMER_ID, FULL_NAME FROM CUSTOMERS
+              WHERE RM_USER_ID = :1
+              ORDER BY LENGTH(FULL_NAME) DESC`,
+            [req.user.userId]
+          );
+          const customers = custSearch.rows || [];
+          const msgLower = message.toLowerCase();
+          for (const c of customers) {
+            if (msgLower.includes(c.FULL_NAME.toLowerCase())) {
+              resolvedCustomerId = c.CUSTOMER_ID;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+      _resolvedCustId = resolvedCustomerId;
+
       // RAG retrieval with source health tracking
       const { docs: ragDocs, sources, totalDocs, failCount } =
-        await rag.retrieveForCopilot(message, customerId || null);
+        await rag.retrieveForCopilot(message, resolvedCustomerId);
 
       // Emit source metadata (strip docs arrays — send only label/count/status)
       const sourcesMeta = Object.fromEntries(
@@ -98,7 +123,11 @@ ${unavailableSources ? `❌ Tidak tersedia: ${unavailableSources}` : ''}
 
 Setiap klaim spesifik WAJIB ditandai dengan sumber dalam kurung kotak, contoh: [Profil Nasabah], [Katalog Produk], [Catatan Meeting].`;
 
-      await llm.chatStream(message, preamble, ragDocs, res, { maxTokens: 1500 });
+      if (paf.PAF_ENABLED) {
+        await paf.callPAF('copilot', message, res, { ragDocs });
+      } else {
+        await llm.chatStream(message, preamble, ragDocs, res, { maxTokens: 1500 });
+      }
     } catch (err) {
       console.error('[Copilot] chat error:', err);
       if (!res.writableEnded) {

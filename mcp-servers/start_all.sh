@@ -12,6 +12,7 @@ declare -A SERVERS=(
   [agent3_campaign]=agent3_campaign.py
   [agent4_alert]=agent4_alert.py
   [agent5_copilot]=agent5_copilot.py
+  [agent6_yahoo_finance]=agent6_yahoo_finance.py
 )
 
 for name in "${!SERVERS[@]}"; do

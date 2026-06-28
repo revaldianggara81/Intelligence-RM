@@ -342,7 +342,7 @@ async function reembed(customerId) {
   // Update existing profile embedding row
   const upd = await db.execute(
     `UPDATE CUSTOMER_EMBEDDINGS
-        SET CONTENT = :1, EMBEDDING = TO_VECTOR(:2, 1024, FLOAT32)
+        SET CONTENT = :1, EMBEDDING = TO_VECTOR(:2, 1536, FLOAT32)
       WHERE CUSTOMER_ID = :3 AND CONTENT_TYPE = 'profile'`,
     [text, vecStr, customerId]
   );
@@ -351,7 +351,7 @@ async function reembed(customerId) {
   if ((upd.rowsAffected || 0) === 0) {
     await db.execute(
       `INSERT INTO CUSTOMER_EMBEDDINGS (CUSTOMER_ID, CONTENT_TYPE, CONTENT, EMBEDDING)
-       VALUES (:1, 'profile', :2, TO_VECTOR(:3, 1024, FLOAT32))`,
+       VALUES (:1, 'profile', :2, TO_VECTOR(:3, 1536, FLOAT32))`,
       [customerId, text, vecStr]
     );
   }

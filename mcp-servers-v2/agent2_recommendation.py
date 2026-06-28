@@ -114,4 +114,5 @@ if __name__ == "__main__":
         port=int(os.getenv("AGENT_RECOMMENDATION_PORT", "9012")),
         middleware=[Middleware(EnsureJSONContentTypeMiddleware)],
         stateless_http=True,
+        json_response=True,
     )

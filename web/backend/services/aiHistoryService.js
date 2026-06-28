@@ -60,7 +60,7 @@ async function _embedAndStore(historyId, customerId, module, title, snippet) {
   await db.execute(
     `INSERT INTO AI_HISTORY_EMBEDDINGS
        (HISTORY_ID, CUSTOMER_ID, MODULE, CONTENT, EMBEDDING, MODEL_USED)
-     VALUES (:1, :2, :3, :4, TO_VECTOR(:5, 1024, FLOAT32), :6)`,
+     VALUES (:1, :2, :3, :4, TO_VECTOR(:5, 1536, FLOAT32), :6)`,
     [historyId, customerId || null, module || null, content, vecStr, model],
     { autoCommit: true }
   );

@@ -36,8 +36,8 @@ class EnsureJSONContentTypeMiddleware:
 
         accept = orig_headers.get(b"accept", b"").decode()
         accept_types = [t.strip() for t in accept.split(",") if t.strip()]
-        if "application/json" not in accept_types or "text/event-stream" not in accept_types:
-            accept = "application/json, text/event-stream"
+        if "application/json" not in accept_types:
+            accept = "application/json"
         headers.append((b"accept", accept.encode()))
 
         scope["headers"] = headers

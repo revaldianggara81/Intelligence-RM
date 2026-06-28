@@ -29,9 +29,9 @@ async function searchCustomerContext(query, customerId, topK = 5) {
 
     const result = await db.execute(
       `SELECT CONTENT, CONTENT_TYPE,
-              VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+              VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
          FROM CUSTOMER_EMBEDDINGS
-        WHERE CUSTOMER_ID = :2
+        WHERE CUSTOMER_ID = :2 AND EMBEDDING IS NOT NULL
         ORDER BY DIST ASC
         FETCH FIRST :3 ROWS ONLY`,
       [vecStr, customerId, topK]
@@ -57,7 +57,7 @@ async function searchMeetingNotes(query, customerId, topK = 3) {
 
     const result = await db.execute(
       `SELECT e.CONTENT,
-              VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+              VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
          FROM MEETING_NOTES_EMBEDDINGS e
         WHERE e.CUSTOMER_ID = :2
         ORDER BY DIST ASC
@@ -84,7 +84,7 @@ async function searchProducts(query, topK = 5) {
 
     const result = await db.execute(
       `SELECT e.CONTENT, p.PRODUCT_NAME, p.CATEGORY,
-              VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+              VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
          FROM PRODUCT_EMBEDDINGS e
          JOIN PRODUCT_CATALOG p ON e.PRODUCT_ID = p.PRODUCT_ID
         WHERE p.IS_ACTIVE = 1
@@ -112,7 +112,7 @@ async function searchMarketContext(query, topK = 3) {
 
     const result = await db.execute(
       `SELECT TITLE, CONTENT,
-              VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+              VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
          FROM MARKET_CONTEXT_EMBEDDINGS
         ORDER BY DIST ASC
         FETCH FIRST :2 ROWS ONLY`,
@@ -159,7 +159,7 @@ async function searchAnalysisHistory(query, customerId, topK = 2, module = null)
       SELECT e.CONTENT,
              e.MODULE,
              TO_CHAR(h.RUN_AT, 'DD Mon YYYY') AS RUN_DATE,
-             VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+             VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
         FROM AI_HISTORY_EMBEDDINGS e
         JOIN AI_ANALYSIS_HISTORY  h ON e.HISTORY_ID = h.HISTORY_ID
       ${filter}
@@ -183,7 +183,7 @@ async function _execCustomerContext(query, customerId, topK) {
   const vecStr = '[' + vec.join(',') + ']';
   const result = await db.execute(
     `SELECT CONTENT, CONTENT_TYPE,
-            VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+            VECTOR_DISTANCE(EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
        FROM CUSTOMER_EMBEDDINGS
       WHERE CUSTOMER_ID = :2
       ORDER BY DIST ASC
@@ -198,7 +198,7 @@ async function _execMeetingNotes(query, customerId, topK) {
   const vecStr = '[' + vec.join(',') + ']';
   const result = await db.execute(
     `SELECT e.CONTENT,
-            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
        FROM MEETING_NOTES_EMBEDDINGS e
       WHERE e.CUSTOMER_ID = :2
       ORDER BY DIST ASC
@@ -213,7 +213,7 @@ async function _execProducts(query, topK) {
   const vecStr = '[' + vec.join(',') + ']';
   const result = await db.execute(
     `SELECT e.CONTENT, p.PRODUCT_NAME, p.CATEGORY,
-            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
        FROM PRODUCT_EMBEDDINGS e
        JOIN PRODUCT_CATALOG p ON e.PRODUCT_ID = p.PRODUCT_ID
       WHERE p.IS_ACTIVE = 1
@@ -225,12 +225,18 @@ async function _execProducts(query, topK) {
 }
 
 async function _execAnalysisHistory(query, customerId, topK) {
+  const countCheck = await db.execute(
+    'SELECT COUNT(*) AS CNT FROM AI_HISTORY_EMBEDDINGS WHERE CUSTOMER_ID = :1 AND EMBEDDING IS NOT NULL',
+    [customerId]
+  );
+  if ((countCheck.rows?.[0]?.CNT || 0) === 0) return [];
+
   const vec    = await embedQuery(query);
   const vecStr = '[' + vec.join(',') + ']';
   const result = await db.execute(
     `SELECT e.CONTENT, e.MODULE,
             TO_CHAR(h.RUN_AT, 'DD Mon YYYY') AS RUN_DATE,
-            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1024, FLOAT32), COSINE) AS DIST
+            VECTOR_DISTANCE(e.EMBEDDING, TO_VECTOR(:1, 1536, FLOAT32), COSINE) AS DIST
        FROM AI_HISTORY_EMBEDDINGS e
        JOIN AI_ANALYSIS_HISTORY  h ON e.HISTORY_ID = h.HISTORY_ID
       WHERE e.CUSTOMER_ID = :2
@@ -281,7 +287,7 @@ async function retrieveForCopilot(query, customerId) {
       : _skipped('Catatan Meeting'),
     _safeSource('Katalog Produk',        () => _execProducts(query, 3)),
     customerId
-      ? _safeSource('Historis Analisis', () => _execAnalysisHistory(query, customerId, 2))
+      ? _safeSource('Historis Analisis', () => _execAnalysisHistory(query, customerId, 5))
       : _skipped('Historis Analisis'),
   ]);
 

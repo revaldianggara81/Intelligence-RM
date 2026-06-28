@@ -32,10 +32,6 @@ async function embedTexts(texts, inputType = INPUT_TYPE_DOC) {
       inputs:           texts.map(t => String(t).substring(0, 4096)),
       inputType,
       truncate:         'END',
-      // cohere.embed-v4.0 defaults to 1536 dims; pin to EMBED_DIM (1024)
-      // so vectors match VECTOR(1024, FLOAT32) columns in the schema.
-      // Supported values: 256, 512, 1024, 1536
-      outputDimensions: oci.EMBED_DIM,
     },
   };
 

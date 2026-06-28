@@ -18,7 +18,7 @@ async function getMaturingDeposits(rmUserId, days = 60) {
        cp.STATUS,
        ROUND(cp.MATURITY_DATE - SYSDATE) AS DAYS_TO_MATURITY,
        c.FULL_NAME, c.INITIALS, c.AVATAR_COLOR, c.TIER, c.TIER_LABEL,
-       c.RISK_PROFILE, c.TOTAL_AUM, c.EMAIL, c.PHONE
+       c.RISK_PROFILE, c.TOTAL_AUM, c.MONTHLY_INCOME, c.EMAIL, c.PHONE
      FROM CUSTOMER_PRODUCTS cp
      JOIN CUSTOMERS c ON cp.CUSTOMER_ID = c.CUSTOMER_ID
     WHERE c.RM_USER_ID = :1
@@ -59,7 +59,7 @@ async function getMaturingByCustomer(customerId) {
 async function analyzeAndStream(customerId, res) {
   try {
     // Stage 1 — Data gathering
-    paf.emitStage(res, 'Customer Data Agent', 'active', 'Mengambil data nasabah dan deposito...');
+    paf.emitStage(res, 'Customer Data Agent', 'active', 'Mengambil data deposito jatuh tempo...');
     const deposits = await getMaturingByCustomer(customerId);
     const custResult = await db.execute(
       `SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = :1`, [customerId]
@@ -73,7 +73,7 @@ async function analyzeAndStream(customerId, res) {
     paf.emitStage(res, 'Customer Data Agent', 'done', `${deposits.length} deposito ditemukan`);
 
     // Stage 2 — RAG retrieval
-    paf.emitStage(res, 'Context Retrieval Agent', 'active', 'Mencari konteks relevan dari knowledge base...');
+    paf.emitStage(res, 'Context Retrieval Agent', 'active', 'Menganalisis profil & riwayat nasabah...');
     const query = `deposito maturity nasabah ${customer.FULL_NAME} profil ${customer.RISK_PROFILE}`;
     const ragDocs = await rag.searchCustomerContext(query, customerId, 4);
     const noteDocs = await rag.searchMeetingNotes('deposito jatuh tempo rekomendasi', customerId, 2);
@@ -81,14 +81,14 @@ async function analyzeAndStream(customerId, res) {
     paf.emitStage(res, 'Context Retrieval Agent', 'done', `${allDocs.length} dokumen konteks ditemukan`);
 
     // Stage 3 — Product matching
-    paf.emitStage(res, 'Product Match Agent', 'active', 'Mencocokkan produk alternatif terbaik...');
+    paf.emitStage(res, 'Product Match Agent', 'active', 'Mencocokkan produk reinvestasi...');
     const productDocs = await rag.searchProducts(
       `deposito alternatif ${customer.RISK_PROFILE} profil ${customer.TIER}`, 4
     );
     paf.emitStage(res, 'Product Match Agent', 'done', `${productDocs.length} produk relevan diidentifikasi`);
 
     // Stage 4 — LLM analysis
-    paf.emitStage(res, 'Maturity Analysis Agent', 'active', 'Menganalisis situasi dan membuat rencana aksi...');
+    paf.emitStage(res, 'Maturity Analysis Agent', 'active', 'Menyusun strategi retensi nasabah...');
 
     // Load action plan section templates from Oracle
     const templates = await getActionPlanTemplates('maturity');
@@ -165,11 +165,11 @@ Panduan: ${T('close', 'Tutup dengan pertanyaan konkret yang mendorong komitmen t
 Cantumkan singkat sumber mana yang berkontribusi: [Profil Nasabah] / [Catatan Meeting] / [Katalog Produk] / [Historis Analisis AI] / [Pengetahuan Umum].
     `.trim();
 
-    paf.emitStage(res, 'Maturity Analysis Agent', 'done', 'Analisis selesai');
+    paf.emitStage(res, 'Maturity Analysis Agent', 'done', 'Strategi retensi siap');
 
     // Stage 5 — Recommendation synthesis
-    paf.emitStage(res, 'Action Plan Agent', 'active', 'Menyusun rencana aksi final...');
-    paf.emitStage(res, 'Action Plan Agent', 'done', 'Rencana aksi siap disampaikan');
+    paf.emitStage(res, 'Action Plan Agent', 'active', 'Membuat rencana follow-up RM...');
+    paf.emitStage(res, 'Action Plan Agent', 'done', 'Rencana follow-up RM siap');
 
     // Stream the LLM response — chatStream owns the SSE stream from here and calls res.end()
     await llm.chatStream(

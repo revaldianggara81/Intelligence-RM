@@ -11,7 +11,10 @@ const paf = require('./pafService');
 /** Get active campaigns */
 async function getActiveCampaigns() {
   const result = await db.execute(
-    `SELECT * FROM CAMPAIGNS WHERE STATUS = 'ACTIVE' ORDER BY START_DATE DESC`
+    `SELECT * FROM CAMPAIGNS
+      WHERE UPPER(STATUS) = 'ACTIVE'
+        AND (END_DATE IS NULL OR END_DATE >= TRUNC(SYSDATE))
+      ORDER BY START_DATE DESC`
   );
   return result.rows || [];
 }
@@ -87,7 +90,10 @@ async function scanAndStream(campaignId, rmUserId, res) {
       eligibilityResults.push({
         CUSTOMER_ID: cust.CUSTOMER_ID,
         FULL_NAME:   cust.FULL_NAME,
-        TIER:        cust.TIER,
+        TIER:        cust.TIER_LABEL || cust.TIER,
+        TIER_LABEL:  cust.TIER_LABEL || cust.TIER,
+        EMAIL:       cust.EMAIL,
+        PHONE:       cust.PHONE,
         TOTAL_AUM:   cust.TOTAL_AUM,
         IS_ELIGIBLE: isEligible ? 1 : 0,
         RULE1_PASS:  eval1 ? 1 : 0,
@@ -110,8 +116,11 @@ async function scanAndStream(campaignId, rmUserId, res) {
         customer: {
           id:          cust.CUSTOMER_ID,
           name:        cust.FULL_NAME,
-          tier:        cust.TIER,
+          tier:        cust.TIER_LABEL || cust.TIER,
+          tierLabel:   cust.TIER_LABEL || cust.TIER,
           aum:         cust.TOTAL_AUM,
+          email:       cust.EMAIL,
+          phone:       cust.PHONE,
           isEligible,
           rule1Pass:   eval1,
           rule2Pass:   eval2,
@@ -132,7 +141,7 @@ async function scanAndStream(campaignId, rmUserId, res) {
         .slice(0, 3);
 
       const pitchList = topEligible.map(e =>
-        `- ${e.FULL_NAME} (${e.TIER}): AUM Rp ${Number(e.TOTAL_AUM || 0).toLocaleString('id-ID')}`
+        `- ${e.FULL_NAME} (${e.TIER_LABEL || e.TIER}): AUM Rp ${Number(e.TOTAL_AUM || 0).toLocaleString('id-ID')}`
       ).join('\n');
 
       // Build detailed eligibility evidence for each top eligible customer
@@ -142,7 +151,7 @@ async function scanAndStream(campaignId, rmUserId, res) {
         if (e.RULE1_PASS) rules.push('✓ Nasabah personal (bukan korporasi)');
         if (e.RULE2_PASS) rules.push('✓ Belum berstatus Privilege dalam 6 bulan terakhir');
         if (e.RULE3_PASS) rules.push(`✓ AUM rata-rata 3 bulan ≥ Rp 500 juta (aktual: Rp ${aumFmt})`);
-        return `${idx + 1}. **${e.FULL_NAME}** (${e.TIER}) — AUM: Rp ${aumFmt}\n   Bukti kelayakan:\n   ${rules.join('\n   ')}`;
+        return `${idx + 1}. **${e.FULL_NAME}** (${e.TIER_LABEL || e.TIER}) — AUM: Rp ${aumFmt}\n   Bukti kelayakan:\n   ${rules.join('\n   ')}`;
       }).join('\n\n');
 
       const prompt = `
